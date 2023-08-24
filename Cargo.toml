@@ -1,0 +1,31 @@
+[package]
+name = "bybit_rs"
+version = "0.1.0"
+authors = ["Omambia Dauglous <omambiadauglous@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+tokio = { version = "1.0.1", features = ["full"] }
+futures = "0.3.5"
+thiserror = "1.0.13"
+
+#JSON libs
+serde_json = "1.0.57"
+serde = "1.0.104"
+serde_derive = "1.0.104"
+
+#Request
+reqwest = { version = "0.11.14", features = [
+    "json",
+    "default",
+    "socks",
+    "blocking",
+    "stream",
+] }
+
+# encryption
+sha2 = "0.9.3"
+hmac = "0.10.1"
+hex = "0.4.3"
+regex = "1.5"
+async-trait = "0.1"
