@@ -1,8 +1,13 @@
 #![allow(unused)]
-pub mod bybit;
 use std::collections::HashMap;
+pub mod bybit;
+pub mod endpoints;
+pub mod helpers;
 
-use bybit::http_manager::{HttpManager, Manager};
+use bybit::{
+    http_manager::{HttpManager, Manager},
+    trade::{self, Trade},
+};
 
 #[tokio::main]
 async fn main() {
@@ -16,16 +21,31 @@ async fn main() {
         testnet,
     );
 
-    let mut query: HashMap<String, String> = HashMap::new();
-    query.insert("category".to_string(), "inverse".to_string());
-    query.insert("symbol".to_string(), "BTCUSD".to_string());
-    query.insert("interval".to_string(), "60".to_string());
+    // let mut query: HashMap<String, String> = HashMap::new();
+    // query.insert("category".to_string(), "inverse".to_string());
+    // query.insert("symbol".to_string(), "BTCUSD".to_string());
+    // query.insert("interval".to_string(), "60".to_string());
 
-    match manager
-        .submit_request(reqwest::Method::GET, "/v5/market/kline", query, true)
-        .await
-    {
-        Ok(result) => println!("{:?}", result["result"].clone()),
+    // match manager
+    //     .submit_request(reqwest::Method::GET, "/v5/market/kline", query, true)
+    //     .await
+    // {
+    //     Ok(result) => println!("{:?}", result["result"].clone()),
+    //     Err(e) => println!("{:?}", e),
+    // };
+
+    let mut query: HashMap<String, String> = HashMap::new();
+    query.insert("category".to_string(), "spot".to_string());
+    query.insert("symbol".to_string(), "BTCUSDT".to_string());
+    query.insert("side".to_string(), "Buy".to_string());
+    query.insert("orderType".to_string(), "Market".to_string());
+    query.insert("qty".to_string(), "200".to_string());
+    query.insert("orderFilter".to_string(), "Order".to_string());
+
+    let trade: trade::TradeHTTP = trade::TradeHTTP::new(manager);
+
+    match trade.place_order(query).await {
+        Ok(result) => println!("{:?}", result),
         Err(e) => println!("{:?}", e),
     };
 }

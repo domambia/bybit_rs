@@ -2,7 +2,7 @@
 use async_trait::async_trait;
 use hmac::{Hmac, Mac, NewMac};
 use reqwest::{header, Method};
-use serde_json::{json, Value};
+use serde_json::{json, to_string, Value};
 use std::{
     collections::HashMap,
     time::{SystemTime, UNIX_EPOCH},
@@ -16,12 +16,7 @@ pub trait Manager {
     ///  Generates authentication signature per Bybit API specifications.
     ///
     ///
-    fn auth(
-        &self,
-        req_params: &str,
-        recv_window: u64,
-        timestamp: u64,
-    ) -> Result<String, &'static str>;
+    fn auth(&self, req_params: &str, recv_window: u64, timestamp: u64) -> Result<String, String>;
     fn prepare_payload(&self, method: &str, parameters: HashMap<String, String>) -> String;
     fn generate_timestamp(&self) -> u64;
     async fn submit_request(
@@ -72,25 +67,27 @@ impl Manager for HttpManager {
     /// Generates authentication signature per Bybit API specifications
     ///
     ///
-    fn auth(
-        &self,
-        req_params: &str,
-        recv_window: u64,
-        timestamp: u64,
-    ) -> Result<String, &'static str> {
-        if self.api_key.is_empty() || self.api_secret.is_empty() {
-            return Err("Authenticated endpoints require keys");
-        }
+    ///
+    ///
+    fn auth(&self, req_params: &str, recv_window: u64, timestamp: u64) -> Result<String, String> {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards");
+        let unix_millis = now.as_secs() * 1000 + u64::from(now.subsec_millis());
 
-        let param_str = format!(
-            "{}{}{}{}",
-            timestamp, &self.api_key, recv_window, req_params
-        );
-        let mut mac = Hmac::<Sha256>::new_varkey(self.api_secret.as_bytes())
-            .expect("HMAC initialization failed");
-        mac.update(param_str.as_bytes());
-        let signature = mac.finalize().into_bytes();
-        Ok(hex::encode(signature))
+        let json_data = serde_json::to_string(req_params).map_err(|err| err.to_string())?;
+
+        let hmac256 = Hmac::<Sha256>::new_varkey(self.api_secret.as_bytes())
+            .map_err(|err| err.to_string())?;
+
+        let mut hmac256 = hmac256.clone();
+        hmac256.update(format!("{}{}{}", unix_millis, self.api_key, recv_window).as_bytes());
+        hmac256.update(json_data.as_bytes());
+
+        let signature_bytes = hmac256.finalize().into_bytes();
+        let signature = hex::encode(signature_bytes);
+
+        Ok(signature)
     }
 
     ///
@@ -116,7 +113,7 @@ impl Manager for HttpManager {
         let since_epoch = current_time
             .duration_since(UNIX_EPOCH)
             .expect("Time went backwards");
-        let timestamp = since_epoch.as_secs() as u64 * 1000 + since_epoch.as_millis() as u64;
+        let timestamp = since_epoch.as_secs() as u64 * 1000 + since_epoch.subsec_millis() as u64;
 
         timestamp
     }
@@ -146,7 +143,6 @@ impl Manager for HttpManager {
             recv_window = std::cmp::min(recv_window, self.recv_window);
             req_params = self.prepare_payload(method.as_str(), query.clone());
             let signature = self.auth(&req_params, recv_window, timestamp)?;
-            println!("{:?}", signature);
             let mut headers = header::HeaderMap::new();
             headers.insert(header::CONTENT_TYPE, "application/json".parse()?);
             headers.insert("X-BAPI-API-KEY", self.api_key.parse()?);
