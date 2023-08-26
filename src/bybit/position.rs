@@ -66,11 +66,6 @@ pub trait Position {
 }
 
 pub struct PositionHTTP {
-    ///
-    ///
-    /// Initialize the Position by passing the HttpManager
-    ///
-    ///
     http_manager: HttpManager,
 }
 

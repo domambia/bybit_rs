@@ -68,6 +68,11 @@ pub struct TradeHTTP {
 }
 #[async_trait]
 impl Trade for TradeHTTP {
+    ///
+    ///
+    //// Initialize the TradeHTTP by passing the HttpManager
+    ///
+    ///
     fn new(http_manager: HttpManager) -> Self {
         TradeHTTP { http_manager }
     }

@@ -98,7 +98,7 @@ impl Account for AccountHTTP {
     ///             Normal account: CONTRACT
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/wallet-balance
@@ -117,7 +117,7 @@ impl Account for AccountHTTP {
     /// Upgrade Unified Account
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/upgrade-unified-account
@@ -136,7 +136,7 @@ impl Account for AccountHTTP {
     /// Get interest records, sorted in reverse order of creation time.
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/borrow-history
@@ -155,7 +155,7 @@ impl Account for AccountHTTP {
     /// Get the collateral information of the current unified margin account, including loan interest rate, loanable amount, collateral conversion rate, whether it can be mortgaged as margin, etc.
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/collateral-info
@@ -174,7 +174,7 @@ impl Account for AccountHTTP {
     /// Get current account Greeks information
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/coin-greeks
@@ -193,7 +193,7 @@ impl Account for AccountHTTP {
     /// Get the trading fee rate of derivatives.
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/fee-rate
@@ -212,7 +212,7 @@ impl Account for AccountHTTP {
     /// Query the margin mode configuration of the account.
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/account-info
@@ -231,7 +231,7 @@ impl Account for AccountHTTP {
     /// Query transaction logs in Unified account.
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/transaction-log
@@ -253,7 +253,7 @@ impl Account for AccountHTTP {
     ///         setMarginMode (string): REGULAR_MARGIN, PORTFOLIO_MARGIN
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/set-margin-mode
@@ -284,7 +284,7 @@ impl Account for AccountHTTP {
     ///         deltaLimit (string): Delta limit (positive and up to 2 decimal places)
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/set-mmp
@@ -306,7 +306,7 @@ impl Account for AccountHTTP {
     ///         baseCoin (string): Base coin
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/reset-mmp
@@ -328,7 +328,7 @@ impl Account for AccountHTTP {
     ///         baseCoin (string): Base coin
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/account/get-mmp-state

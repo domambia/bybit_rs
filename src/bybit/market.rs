@@ -85,6 +85,11 @@ pub struct MarketHTTP {
 
 #[async_trait]
 impl Market for HttpManager {
+    ///
+    ///
+    //// Initialize the MarketHTTP by passing the HttpManager
+    ///
+    ///
     fn new(http_manager: HttpManager) -> Self {
         TradeHTTP { http_manager }
     }
@@ -96,7 +101,7 @@ impl Market for HttpManager {
     ///         interval (string): Kline interval.
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/kline
@@ -117,7 +122,7 @@ impl Market for HttpManager {
     ///         interval (string): Kline interval. 1,3,5,15,30,60,120,240,360,720,D,M,W
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/mark-kline
@@ -138,7 +143,7 @@ impl Market for HttpManager {
     ///         interval (string): Kline interval. 1,3,5,15,30,60,120,240,360,720,D,M,W
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/index-kline
@@ -159,7 +164,7 @@ impl Market for HttpManager {
     ///         interval (string): Kline interval
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/preimum-index-kline
@@ -178,7 +183,7 @@ impl Market for HttpManager {
     ///         category (string): Product type. spot,linear,inverse,option
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/instrument
@@ -198,7 +203,7 @@ impl Market for HttpManager {
     ///         symbol (string): Symbol name
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/orderbook
@@ -217,7 +222,7 @@ impl Market for HttpManager {
     ///         category (string): Product type. spot,linear,inverse,option
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/tickers
@@ -239,7 +244,7 @@ impl Market for HttpManager {
     ///         symbol (string): Symbol name
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/history-fund-rate
@@ -259,7 +264,7 @@ impl Market for HttpManager {
     ///         symbol (string): Symbol name
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/recent-trade
@@ -280,7 +285,7 @@ impl Market for HttpManager {
     ///         intervalTime (string): Interval. 5min,15min,30min,1h,4h,1d
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/open-interest
@@ -304,7 +309,7 @@ impl Market for HttpManager {
     ///         category (string): Product type. option
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/iv
@@ -326,7 +331,7 @@ impl Market for HttpManager {
     ///     The data is updated every 24 hours.
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/insurance
@@ -346,7 +351,7 @@ impl Market for HttpManager {
     /// Query risk limit of futures
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/risk-limit
@@ -362,7 +367,7 @@ impl Market for HttpManager {
     ///     The data is updated every 24 hours.
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/insurance
@@ -383,7 +388,7 @@ impl Market for HttpManager {
     /// Query risk limit of futures
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as HashMap.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/market/risk-limit
