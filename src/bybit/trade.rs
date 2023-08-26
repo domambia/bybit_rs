@@ -80,7 +80,7 @@ impl Trade for TradeHTTP {
     ///     orderType (string): Market, Limit
     ///     qty (string): Order quantity
     /// Returns:
-    ///     Request results as dictionary.
+    ///     Request results as JSON data.
     /// Additional information:
     ///     https://bybit-exchange.github.io/docs/v5/order/create-order
     async fn place_order(
@@ -101,7 +101,7 @@ impl Trade for TradeHTTP {
     ///         symbol (string): Symbol name
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as JSON data.
 
     ///     Additional information:
     async fn amend_order(
@@ -128,7 +128,7 @@ impl Trade for TradeHTTP {
     ///         orderLinkId (string): User customised order ID. Either orderId or orderLinkId is required
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as JSON data.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/cancel-order
@@ -152,7 +152,7 @@ impl Trade for TradeHTTP {
     ///         category (string): Product type Unified account: spot, linear, optionNormal account: linear, inverse. Please note that category is not involved with business logic
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as JSON data.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/open-order
@@ -180,7 +180,7 @@ impl Trade for TradeHTTP {
     ///             Please note that category is not involved with business logic. If cancel all by baseCoin, it will cancel all linear & inverse orders
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as JSON data.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/cancel-all
@@ -209,7 +209,7 @@ impl Trade for TradeHTTP {
     ///             Please note that category is not involved with business logic
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as JSON data.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/order-list
@@ -237,7 +237,7 @@ impl Trade for TradeHTTP {
     ///         > qty (string): Order quantity
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as JSON data.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/batch-place
@@ -262,7 +262,7 @@ impl Trade for TradeHTTP {
     ///         > symbol (string): Symbol name
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as JSON data.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/batch-cancel
@@ -287,7 +287,7 @@ impl Trade for TradeHTTP {
     ///         side (string): Transaction side. Buy,Sell
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as JSON data.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/spot-borrow-quota
@@ -310,7 +310,7 @@ impl Trade for TradeHTTP {
     ///         timeWindow (integer): Disconnection timing window time. [10, 300], unit: second
 
     ///     Returns:
-    ///         Request results as dictionary.
+    ///         Request results as JSON data.
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/dcp
