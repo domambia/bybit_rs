@@ -1,6 +1,9 @@
 #![allow(unused)]
 use async_trait::async_trait;
-use std::{collections::HashMap, pin::Pin};
+use std::{
+    collections::{BTreeMap, HashMap},
+    pin::Pin,
+};
 
 use futures::Future;
 use reqwest::Method;
@@ -159,7 +162,7 @@ impl Trade for TradeHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
             .submit_request(
-                Method::POST,
+                Method::GET,
                 &v5trade::Trade::GetOpenOrders.to_string(),
                 query,
                 true,
@@ -216,7 +219,7 @@ impl Trade for TradeHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
             .submit_request(
-                Method::POST,
+                Method::GET,
                 &v5trade::Trade::GetOrderHistory.to_string(),
                 query,
                 true,
@@ -294,7 +297,7 @@ impl Trade for TradeHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
             .submit_request(
-                Method::POST,
+                Method::GET,
                 &v5trade::Trade::GetBorrowQuota.to_string(),
                 query,
                 true,

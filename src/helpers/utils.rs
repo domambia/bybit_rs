@@ -1,5 +1,13 @@
-use std::collections::HashMap;
+use hmac::{Hmac, Mac, NewMac};
+use openssl::hash::{hash, MessageDigest};
+use openssl::pkey::PKey;
+use openssl::sign::Signer;
+use sha2::Sha256;
+use std::collections::{BTreeMap, HashMap};
 use std::time::{SystemTime, UNIX_EPOCH};
+use url::form_urlencoded::{self, Serializer};
+
+use crate::errors::app_error::AppError;
 
 fn generate_timestamp() -> u128 {
     let timestamp = SystemTime::now()
@@ -65,5 +73,75 @@ fn is_usdc_option(symbol: &str) -> bool {
         true
     } else {
         false
+    }
+}
+
+pub fn gen_query_string_with_singature(
+    params: &BTreeMap<String, String>,
+    secret: &str,
+) -> Result<String, AppError> {
+    let mut query = Serializer::new(String::new());
+    for (key, value) in params.iter() {
+        query.append_pair(key, value);
+    }
+
+    let param_string = query.finish();
+    let sign = sign_query_string(&param_string, secret)?;
+    Ok(format!("{}&sign={}", param_string, sign))
+}
+
+pub fn gen_query_string(
+    params: &BTreeMap<String, String>,
+    secret: &str,
+) -> Result<String, AppError> {
+    let mut query = Serializer::new(String::new());
+    for (key, value) in params.iter() {
+        query.append_pair(key, value);
+    }
+
+    let param_string = query.finish();
+    let sign = sign_query_string(&param_string, secret)?;
+    Ok(format!("{}", sign))
+}
+
+pub fn generate_query_data(params: HashMap<String, String>) -> String {
+    let mut query = Serializer::new(String::new());
+    for (key, value) in params.iter() {
+        query.append_pair(key, value);
+    }
+    query.finish()
+}
+
+fn sign_query_string(query_string: &str, secret: &str) -> Result<String, AppError> {
+    let mut mac = Hmac::<Sha256>::new_varkey(secret.as_bytes()).map_err(|_| AppError::HmacError)?;
+    mac.update(query_string.as_bytes());
+    Ok(bytes_to_hex(mac.finalize().into_bytes().to_vec()))
+}
+
+fn bytes_to_hex(bytes: Vec<u8>) -> String {
+    bytes.iter().map(|byte| format!("{:02x}", byte)).collect()
+}
+
+// pub fn extract_value<'a>(input: &'a str, key: &'a str) -> Option<&'a str> {
+//     let key_str = format!("{}=", key);
+//     if let Some(start) = input.find(&key_str) {
+//         let end = input[start + key_str.len()..]
+//             .find('&')
+//             .unwrap_or(input.len());
+//         Some(&input[start + key_str.len()..start + key_str.len() + end])
+//     } else {
+//         None
+//     }
+// }
+
+pub fn remove_key(input: &str, key: &str) -> String {
+    let key_str = format!("{}=", key);
+    if let Some(start) = input.find(&key_str) {
+        let end = input[start..].find('&').unwrap_or(input.len());
+        let before = &input[..start];
+        let after = &input[start + key_str.len() + end..];
+        format!("{}{}", before, after)
+    } else {
+        input.to_string()
     }
 }

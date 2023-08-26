@@ -1,14 +1,17 @@
 #![allow(unused)]
 use async_trait::async_trait;
 use hmac::{Hmac, Mac, NewMac};
-use reqwest::{header, Method};
+use reqwest::{header, Method, Url};
 use serde_json::{json, to_string, Value};
 use std::{
-    collections::HashMap,
+    collections::{BTreeMap, HashMap},
     time::{SystemTime, UNIX_EPOCH},
 };
+use url::form_urlencoded;
 
 use sha2::Sha256;
+
+use crate::helpers::utils;
 
 #[async_trait]
 pub trait Manager {
@@ -16,8 +19,17 @@ pub trait Manager {
     ///  Generates authentication signature per Bybit API specifications.
     ///
     ///
-    fn auth(&self, req_params: &str, recv_window: u64, timestamp: u64) -> Result<String, String>;
-    fn prepare_payload(&self, method: &str, parameters: HashMap<String, String>) -> String;
+    fn auth(
+        &self,
+        req_params: &BTreeMap<String, String>,
+        recv_window: u64,
+        timestamp: u64,
+    ) -> Result<String, String>;
+    fn prepare_payload(
+        &self,
+        method: &str,
+        parameters: HashMap<String, String>,
+    ) -> BTreeMap<String, String>;
     fn generate_timestamp(&self) -> u64;
     async fn submit_request(
         &self,
@@ -28,7 +40,7 @@ pub trait Manager {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>>;
 }
 pub struct HttpManager {
-    api_key: String,
+    pub api_key: String,
     api_secret: String,
     base_url: String,
     recv_window: u64,
@@ -45,7 +57,7 @@ impl HttpManager {
     ///
     pub fn new(api_key: String, api_secret: String, testnet: bool) -> Self {
         let sub_domain = if testnet { "api-testnet" } else { "api" };
-        let domain = if testnet { "bytick" } else { "bybit" };
+        let domain = if testnet { "bybit" } else { "bybit" };
         let url = format!("https://{}.{}.com", sub_domain, domain);
         let client = reqwest::Client::new();
 
@@ -67,25 +79,22 @@ impl Manager for HttpManager {
     /// Generates authentication signature per Bybit API specifications
     ///
     ///
-    ///
-    ///
-    fn auth(&self, req_params: &str, recv_window: u64, timestamp: u64) -> Result<String, String> {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards");
-        let unix_millis = now.as_secs() * 1000 + u64::from(now.subsec_millis());
+    fn auth(
+        &self,
+        req_params: &BTreeMap<String, String>,
+        _recv_window: u64, // I noticed recv_window and timestamp aren't used in this function
+        _timestamp: u64,
+    ) -> Result<String, String> {
+        let api_key = &self.api_key;
+        let api_secret = &self.api_secret;
 
-        let json_data = serde_json::to_string(req_params).map_err(|err| err.to_string())?;
+        if api_key.is_empty() || api_secret.is_empty() {
+            return Err("Authenticated endpoints require keys.".to_string());
+        }
 
-        let hmac256 = Hmac::<Sha256>::new_varkey(self.api_secret.as_bytes())
-            .map_err(|err| err.to_string())?;
-
-        let mut hmac256 = hmac256.clone();
-        hmac256.update(format!("{}{}{}", unix_millis, self.api_key, recv_window).as_bytes());
-        hmac256.update(json_data.as_bytes());
-
-        let signature_bytes = hmac256.finalize().into_bytes();
-        let signature = hex::encode(signature_bytes);
+        // Convert AppError to String
+        let signature = utils::gen_query_string_with_singature(&req_params, &api_secret)
+            .map_err(|e| format!("Error: {:?}", e))?;
 
         Ok(signature)
     }
@@ -95,18 +104,17 @@ impl Manager for HttpManager {
     /// GET requests are formatted as query strings
     /// POST requests are formatted as JSON
     ///
-    fn prepare_payload(&self, method: &str, parameters: HashMap<String, String>) -> String {
-        if method == "GET" {
-            parameters
-                .iter()
-                .filter(|(_, v)| !v.is_empty())
-                .map(|(k, v)| format!("{}={}", k, v))
-                .collect::<Vec<_>>()
-                .join("&")
-        } else {
-            json!(parameters).to_string()
-        }
-    }
+    // fn prepare_payload(
+    //     &self,
+    //     method: &str,
+    //     parameters: HashMap<String, String>,
+    // ) -> BTreeMap<String, String> {
+    //     if method == "GET" {
+    //         parameters.into_iter().collect()
+    //     } else {
+    //         parameters.into_iter().collect()
+    //     }
+    // }
 
     fn generate_timestamp(&self) -> u64 {
         let current_time = SystemTime::now();
@@ -116,6 +124,45 @@ impl Manager for HttpManager {
         let timestamp = since_epoch.as_secs() as u64 * 1000 + since_epoch.subsec_millis() as u64;
 
         timestamp
+    }
+
+    fn prepare_payload(
+        &self,
+        method: &str,
+        mut parameters: HashMap<String, String>,
+    ) -> BTreeMap<String, String> {
+        fn cast_values(parameters: &mut HashMap<String, String>) {
+            let string_params = ["qty", "price", "triggerPrice", "takeProfit", "stopLoss"];
+            let integer_params = ["positionIdx"];
+
+            for (key, value) in parameters.iter_mut() {
+                if string_params.contains(&key.as_str()) {
+                    if value.parse::<i64>().is_err() {
+                        // Handle parsing error, or simply leave value unchanged
+                    }
+                } else if integer_params.contains(&key.as_str()) {
+                    if !value.is_empty() {
+                        let parsed_value = value.parse::<i64>();
+                        if let Ok(parsed) = parsed_value {
+                            *value = parsed.to_string();
+                        }
+                    }
+                }
+            }
+        }
+
+        if method == "GET" {
+            let mut payload = BTreeMap::new();
+            for (k, v) in parameters.iter() {
+                if !v.is_empty() {
+                    payload.insert(k.clone(), v.clone());
+                }
+            }
+            payload
+        } else {
+            cast_values(&mut parameters);
+            parameters.into_iter().collect()
+        }
     }
 
     ///
@@ -135,56 +182,60 @@ impl Manager for HttpManager {
         query: HashMap<String, String>,
         auth: bool,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
-        let mut req_params = String::new();
+        let mut req_params: BTreeMap<String, String> = BTreeMap::new();
         let mut recv_window = self.recv_window;
 
         if auth {
             let timestamp = self.generate_timestamp();
             recv_window = std::cmp::min(recv_window, self.recv_window);
-            req_params = self.prepare_payload(method.as_str(), query.clone());
-            let signature = self.auth(&req_params, recv_window, timestamp)?;
+
+            let mut new_query: HashMap<String, String> = query.clone();
+            new_query.insert("timestamp".to_string(), timestamp.to_string());
+            new_query.insert("api_key".to_string(), self.api_key.to_string());
+            req_params = self.prepare_payload(method.as_str(), new_query.clone());
+            let post_put_update_singature = self.auth(&req_params, recv_window, timestamp)?;
+
+            let get_sing = utils::gen_query_string(&req_params, &self.api_secret)
+                .map_err(|e| format!("Error: {:?}", e))?;
+
             let mut headers = header::HeaderMap::new();
             headers.insert(header::CONTENT_TYPE, "application/json".parse()?);
             headers.insert("X-BAPI-API-KEY", self.api_key.parse()?);
-            headers.insert("X-BAPI-SIGN", signature.parse()?);
+            headers.insert("X-BAPI-SIGN", get_sing.parse()?);
             headers.insert("X-BAPI-SIGN-TYPE", "2".parse()?);
             headers.insert("X-BAPI-TIMESTAMP", timestamp.to_string().parse()?);
             headers.insert("X-BAPI-RECV-WINDOW", recv_window.to_string().parse()?);
+            let get_query_string = utils::generate_query_data(query.clone());
 
-            let request_builder = self
-                .client
-                .request(method.clone(), format!("{}{}", self.base_url, path))
-                .headers(headers);
+            let post_put_path_url =
+                format!("{}{}?{}", self.base_url, path, post_put_update_singature);
+            let get_url = format!("{}{}?{}", self.base_url, path, get_query_string);
 
-            let response = if method == Method::GET && !query.is_empty() {
-                request_builder.query(&query).send().await?
-            } else {
-                request_builder.json(&query).send().await?
-            };
+            println!("Query string: {:?}", get_query_string);
 
-            let response_text = response.text().await?;
-            let s_json: Value = serde_json::from_str(&response_text)?;
-            let ret_code = "retCode";
-            let ret_msg = "retMsg";
-
-            if let Some(ret_code_val) = s_json.get(ret_code).and_then(Value::as_i64) {
-                if ret_code_val != 0 {
-                    // Handle error case
-                    let ret_msg_val = s_json
-                        .get(ret_msg)
-                        .and_then(Value::as_str)
-                        .unwrap_or("Unknown error");
+            let response = match method {
+                Method::GET => self.client.get(&get_url).headers(headers).send().await,
+                Method::POST => self.client.post(&post_put_path_url).send().await,
+                Method::PUT => self.client.put(&post_put_path_url).send().await,
+                Method::DELETE => self.client.delete(&post_put_path_url).send().await,
+                // Add more cases for other HTTP methods
+                _ => {
                     return Err(Box::new(std::io::Error::new(
                         std::io::ErrorKind::Other,
-                        format!(
-                            "InvalidRequestError: {} {} {}. {}",
-                            method, path, req_params, ret_msg_val
-                        ),
-                    )));
-                } else {
-                    // Handle success case
-                    return Ok(s_json);
+                        "Unsupported HTTP method",
+                    )))
                 }
+            };
+
+            match response {
+                Ok(response) => {
+                    let body_text = response.text().await?; // Corrected placement of await
+                    let body: serde_json::Value = serde_json::from_str(&body_text)?; // Corrected placement of await
+                    let resp_data = serde_json::to_string_pretty(&body)?;
+
+                    return Ok((resp_data).parse::<Value>().unwrap());
+                }
+                Err(e) => println!("Request failed: {}", e),
             }
         }
 
