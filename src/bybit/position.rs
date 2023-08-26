@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use std::{
     collections::{BTreeMap, HashMap},
     pin::Pin,
+    sync::Arc,
 };
 
 use futures::Future;
@@ -14,7 +15,7 @@ use crate::endpoints::v5trade;
 use super::http_manager::{HttpManager, Manager};
 #[async_trait]
 pub trait Position {
-    fn new(http_manager: HttpManager) -> Self;
+    fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn get_position(
         &self,
         query: HashMap<String, String>,
@@ -66,12 +67,12 @@ pub trait Position {
 }
 
 pub struct PositionHTTP {
-    http_manager: HttpManager,
+    http_manager: Arc<HttpManager>,
 }
 
 #[async_trait]
 impl Position for PositionHTTP {
-    fn new(http_manager: HttpManager) -> Self {
+    fn new(http_manager: Arc<HttpManager>) -> Self {
         PositionHTTP { http_manager }
     }
 

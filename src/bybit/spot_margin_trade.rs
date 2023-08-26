@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use std::{
     collections::{BTreeMap, HashMap},
     pin::Pin,
+    sync::Arc,
 };
 
 use futures::Future;
@@ -14,7 +15,7 @@ use crate::endpoints::v5spot_margin_trade;
 use super::http_manager::{HttpManager, Manager};
 #[async_trait]
 pub trait SpotMarginTrade {
-    fn new(http_manager: HttpManager) -> Self;
+    fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn spot_margin_trade_toggle_margin_trade(
         &self,
         query: HashMap<String, String>,
@@ -72,7 +73,7 @@ pub trait SpotMarginTrade {
 }
 
 pub struct SpotMarginTradeHTTP {
-    http_manager: HttpManager,
+    http_manager: Arc<HttpManager>,
 }
 #[async_trait]
 impl SpotMarginTrade for SpotMarginTradeHTTP {
@@ -81,7 +82,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     //// Initialize the SpotMarginHTTP by passing the HttpManager
     ///
     ///
-    fn new(http_manager: HttpManager) -> Self {
+    fn new(http_manager: Arc<HttpManager>) -> Self {
         SpotMarginTradeHTTP { http_manager }
     }
     // UTA only. Turn spot margin trade on / off.

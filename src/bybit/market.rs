@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use std::{
     collections::{BTreeMap, HashMap},
     pin::Pin,
+    sync::Arc,
 };
 
 use futures::Future;
@@ -12,86 +13,86 @@ use serde_json::Value;
 use crate::endpoints::v5market;
 
 use super::http_manager::{HttpManager, Manager};
-
-pub trait Makert {
-    fn new(http_manager: HttpManager) -> Self;
-    fn get_kline(
+#[async_trait]
+pub trait Market {
+    fn new(http_manager: Arc<HttpManager>) -> Self;
+    async fn get_kline(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
-    fn get_mark_price_kline(
+    async fn get_mark_price_kline(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
-    fn get_index_price_kline(
+    async fn get_index_price_kline(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
-    fn get_premium_index_price_kline(
+    async fn get_premium_index_price_kline(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
-    fn get_instruments_info(
+    async fn get_instruments_info(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
-    fn get_orderbook(
+    async fn get_orderbook(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
-    fn get_tickers(
+    async fn get_tickers(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
-    fn get_funding_rate_history(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
-
-    fn get_public_trade_history(
+    async fn get_funding_rate_history(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
-    fn get_open_interest(
+    async fn get_public_trade_history(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
-    fn get_historical_volatility(
+    async fn get_open_interest(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
-    fn get_insurance(
+    async fn get_historical_volatility(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
-    fn get_risk_limit(
+    async fn get_insurance(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
-    fn get_option_delivery_price(
+    async fn get_risk_limit(
+        &self,
+        query: HashMap<String, String>,
+    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+
+    async fn get_option_delivery_price(
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
 }
 
 pub struct MarketHTTP {
-    http_manager: HttpManager,
+    http_manager: Arc<HttpManager>,
 }
 
 #[async_trait]
-impl Market for HttpManager {
+impl Market for MarketHTTP {
     ///
     ///
-    //// Initialize the MarketHTTP by passing the HttpManager
+    //// Initialize the MarketHTTP by passing the Arc<HttpManager>
     ///
     ///
-    fn new(http_manager: HttpManager) -> Self {
-        TradeHTTP { http_manager }
+    fn new(http_manager: Arc<HttpManager>) -> Self {
+        MarketHTTP { http_manager }
     }
     /// Query the kline data. Charts are returned in groups based on the requested interval.
 
@@ -109,10 +110,10 @@ impl Market for HttpManager {
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let url = v5market::KLINE.to_string();
+        let url = v5market::MarketEnum::GetKline.to_string();
         self.http_manager
-            .request(Method::GET, url, query, true)
-            .await?
+            .submit_request(Method::GET, &url, query, true)
+            .await
     }
     /// Query the mark price kline data. Charts are returned in groups based on the requested interval.
 
@@ -130,10 +131,10 @@ impl Market for HttpManager {
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let url = v5market::MARK_PRICE_KLINE.to_string();
+        let url = v5market::MarketEnum::GetMarkPriceKline.to_string();
         self.http_manager
-            .request(Method::GET, url, query, true)
-            .await?
+            .submit_request(Method::GET, &url, query, true)
+            .await
     }
     /// Query the index price kline data. Charts are returned in groups based on the requested interval.
 
@@ -151,10 +152,10 @@ impl Market for HttpManager {
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let url = v5market::INDEX_PRICE_KLINE.to_string();
+        let url = v5market::MarketEnum::GetIndexPriceKline.to_string();
         self.http_manager
-            .request(Method::GET, url, query, true)
-            .await?
+            .submit_request(Method::GET, &url, query, true)
+            .await
     }
     /// Retrieve the premium index price kline data. Charts are returned in groups based on the requested interval.
 
@@ -172,10 +173,10 @@ impl Market for HttpManager {
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let url = v5market::PREMIUM_INDEX_PRICE_KLINE.to_string();
+        let url = v5market::MarketEnum::GetPremiumIndexPriceKline.to_string();
         self.http_manager
-            .request(Method::GET, url, query, true)
-            .await?
+            .submit_request(Method::GET, &url, query, true)
+            .await
     }
     /// Query a list of instruments of online trading pair.
 
@@ -191,10 +192,10 @@ impl Market for HttpManager {
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let url = v5market::INSTRUMENTS_INFO.to_string();
+        let url = v5market::MarketEnum::GetInstrumentsInfo.to_string();
         self.http_manager
-            .request(Method::GET, url, query, true)
-            .await?
+            .submit_request(Method::GET, &url, query, true)
+            .await
     }
     /// Query orderbook data
 
@@ -211,10 +212,10 @@ impl Market for HttpManager {
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let url = v5market::ORDERBOOK_L2_25.to_string();
+        let url = v5market::MarketEnum::GetOrderbook.to_string();
         self.http_manager
-            .request(Method::GET, url, query, true)
-            .await?
+            .submit_request(Method::GET, &url, query, true)
+            .await
     }
     /// Query the latest price snapshot, best bid/ask price, and trading volume in the last 24 hours.
 
@@ -230,10 +231,10 @@ impl Market for HttpManager {
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let url = v5market::TICKERS.to_string();
+        let url = v5market::MarketEnum::GetTickers.to_string();
         self.http_manager
-            .request(Method::GET, url, query, true)
-            .await?
+            .submit_request(Method::GET, &url, query, true)
+            .await
     }
     /// Query historical funding rate. Each symbol has a different funding interval.
     ///     For example, if the interval is 8 hours and the current time is UTC 12, then it returns the last funding rate, which settled at UTC 8.
@@ -252,10 +253,10 @@ impl Market for HttpManager {
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let url = v5market::FUNDING_RATE_HISTORY.to_string();
+        let url = v5market::MarketEnum::GetFundingRateHistory.to_string();
         self.http_manager
-            .request(Method::GET, url, query, true)
-            .await?
+            .submit_request(Method::GET, &url, query, true)
+            .await
     }
     /// Query recent public trading data in Bybit.
 
@@ -272,10 +273,10 @@ impl Market for HttpManager {
         &self,
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let url = v5market::PUBLIC_TRADE_HISTORY.to_string();
+        let url = v5market::MarketEnum::GetPublicTradingHistory.to_string();
         self.http_manager
-            .request(Method::GET, url, query, true)
-            .await?
+            .submit_request(Method::GET, &url, query, true)
+            .await
     }
     /// Get open interest of each symbol.
 
@@ -294,13 +295,13 @@ impl Market for HttpManager {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .request(
+            .submit_request(
                 Method::GET,
-                v5market::OPEN_INTEREST.to_string(),
+                &v5market::MarketEnum::GetOpenInterest.to_string(),
                 query,
                 true,
             )
-            .await?
+            .await
     }
 
     /// Query option historical volatility
@@ -318,13 +319,13 @@ impl Market for HttpManager {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .request(
+            .submit_request(
                 Method::GET,
-                v5market::HISTORICAL_VOLATILITY.to_string(),
+                &v5market::MarketEnum::GetHistoricalVolatility.to_string(),
                 query,
                 true,
             )
-            .await?
+            .await
     }
 
     /// Query Bybit insurance pool data (BTC/USDT/USDC etc).
@@ -340,13 +341,13 @@ impl Market for HttpManager {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .request(
+            .submit_request(
                 Method::GET,
-                v5market::INSURANCE_FUND.to_string(),
+                &v5market::MarketEnum::GetInsurance.to_string(),
                 query,
                 true,
             )
-            .await?
+            .await
     }
     /// Query risk limit of futures
 
@@ -360,8 +361,13 @@ impl Market for HttpManager {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .request(Method::GET, v5market::RISK_LIMIT.to_string(), query, true)
-            .await?
+            .submit_request(
+                Method::GET,
+                &v5market::MarketEnum::GetRiskLimit.to_string(),
+                query,
+                true,
+            )
+            .await
     }
     /// Query Bybit insurance pool data (BTC/USDT/USDC etc).
     ///     The data is updated every 24 hours.
@@ -376,28 +382,12 @@ impl Market for HttpManager {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .request(
+            .submit_request(
                 Method::GET,
-                v5market::OPTION_DELIVERY_PRICE.to_string(),
+                &v5market::MarketEnum::GetOptionDeliveryPrice.to_string(),
                 query,
                 true,
             )
-            .await?
-    }
-
-    /// Query risk limit of futures
-
-    ///     Returns:
-    ///         Request results as HashMap.
-
-    ///     Additional information:
-    ///         https://bybit-exchange.github.io/docs/v5/market/risk-limit
-    async fn get_option_risk(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
-        self.http_manager
-            .request(Method::GET, v5market::OPTION_RISK.to_string(), query, true)
-            .await?
+            .await
     }
 }

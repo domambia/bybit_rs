@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use std::{
     collections::{BTreeMap, HashMap},
     pin::Pin,
+    sync::Arc,
 };
 
 use futures::Future;
@@ -14,7 +15,7 @@ use crate::endpoints::v5trade;
 use super::http_manager::{HttpManager, Manager};
 #[async_trait]
 pub trait Trade {
-    fn new(http_manager: HttpManager) -> Self;
+    fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn place_order(
         &self,
         query: HashMap<String, String>,
@@ -64,7 +65,7 @@ pub trait Trade {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
 }
 pub struct TradeHTTP {
-    http_manager: HttpManager,
+    http_manager: Arc<HttpManager>,
 }
 #[async_trait]
 impl Trade for TradeHTTP {
@@ -73,7 +74,7 @@ impl Trade for TradeHTTP {
     //// Initialize the TradeHTTP by passing the HttpManager
     ///
     ///
-    fn new(http_manager: HttpManager) -> Self {
+    fn new(http_manager: Arc<HttpManager>) -> Self {
         TradeHTTP { http_manager }
     }
     ////

@@ -1,5 +1,6 @@
 #![allow(unused)]
 use async_trait::async_trait;
+use std::sync::Arc;
 use std::{
     collections::{BTreeMap, HashMap},
     pin::Pin,
@@ -14,7 +15,7 @@ use crate::endpoints::v5spot_leverage_token;
 use super::http_manager::{HttpManager, Manager};
 #[async_trait]
 pub trait SpotLeverageTokenTrade {
-    fn new(http_manager: HttpManager) -> Self;
+    fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn get_leveraged_token_info(
         &self,
         query: HashMap<String, String>,
@@ -42,16 +43,16 @@ pub trait SpotLeverageTokenTrade {
 }
 
 pub struct SpotLeverageTokenTradeHTTP {
-    http_manager: HttpManager,
+    http_manager: Arc<HttpManager>,
 }
 #[async_trait]
 impl SpotLeverageTokenTrade for SpotLeverageTokenTradeHTTP {
     ///
     ///
-    ///// Initialize the SpotLeverageTokenHTTP by passing the HttpManager
+    ///// Initialize the SpotLeverageTokenHTTP by passing the Arc<HttpManager>
     ///
     ///
-    fn new(http_manager: HttpManager) -> Self {
+    fn new(http_manager: Arc<HttpManager>) -> Self {
         SpotLeverageTokenTradeHTTP { http_manager }
     }
 

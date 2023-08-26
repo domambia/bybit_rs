@@ -15,10 +15,6 @@ use crate::helpers::utils;
 
 #[async_trait]
 pub trait Manager {
-    ///
-    ///  Generates authentication signature per Bybit API specifications.
-    ///
-    ///
     fn auth(
         &self,
         req_params: &BTreeMap<String, String>,
@@ -30,7 +26,6 @@ pub trait Manager {
         method: &str,
         parameters: HashMap<String, String>,
     ) -> BTreeMap<String, String>;
-    fn generate_timestamp(&self) -> u64;
     async fn submit_request(
         &self,
         method: Method,
@@ -99,11 +94,6 @@ impl Manager for HttpManager {
         Ok(signature)
     }
 
-    ///
-    /// Prepares payload for request
-    /// GET requests are formatted as query strings
-    /// POST requests are formatted as JSON
-    ///
     // fn prepare_payload(
     //     &self,
     //     method: &str,
@@ -116,16 +106,15 @@ impl Manager for HttpManager {
     //     }
     // }
 
-    fn generate_timestamp(&self) -> u64 {
-        let current_time = SystemTime::now();
-        let since_epoch = current_time
-            .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards");
-        let timestamp = since_epoch.as_secs() as u64 * 1000 + since_epoch.subsec_millis() as u64;
+    ///
+    /// Generate timestamp
+    ///
 
-        timestamp
-    }
-
+    ///
+    /// Prepares payload for request
+    /// GET requests are formatted as query strings
+    /// POST requests are formatted as JSON
+    ///
     fn prepare_payload(
         &self,
         method: &str,
@@ -186,7 +175,7 @@ impl Manager for HttpManager {
         let mut recv_window = self.recv_window;
 
         if auth {
-            let timestamp = self.generate_timestamp();
+            let timestamp = utils::generate_timestamp();
             recv_window = std::cmp::min(recv_window, self.recv_window);
 
             let mut new_query: HashMap<String, String> = query.clone();

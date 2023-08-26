@@ -9,14 +9,15 @@ use url::form_urlencoded::{self, Serializer};
 
 use crate::errors::app_error::AppError;
 
-fn generate_timestamp() -> u128 {
-    let timestamp = SystemTime::now()
+pub fn generate_timestamp() -> u64 {
+    let current_time = SystemTime::now();
+    let since_epoch = current_time
         .duration_since(UNIX_EPOCH)
-        .expect("Time went backwards")
-        .as_millis();
+        .expect("Time went backwards");
+    let timestamp = since_epoch.as_secs() as u64 * 1000 + since_epoch.subsec_millis() as u64;
+
     timestamp
 }
-
 // fn identify_ws_method<'a>(
 //     input_wss_url: &'a str,
 //     wss_dictionary: &'a HashMap<&'a str, &'a str>,
@@ -120,28 +121,4 @@ fn sign_query_string(query_string: &str, secret: &str) -> Result<String, AppErro
 
 fn bytes_to_hex(bytes: Vec<u8>) -> String {
     bytes.iter().map(|byte| format!("{:02x}", byte)).collect()
-}
-
-// pub fn extract_value<'a>(input: &'a str, key: &'a str) -> Option<&'a str> {
-//     let key_str = format!("{}=", key);
-//     if let Some(start) = input.find(&key_str) {
-//         let end = input[start + key_str.len()..]
-//             .find('&')
-//             .unwrap_or(input.len());
-//         Some(&input[start + key_str.len()..start + key_str.len() + end])
-//     } else {
-//         None
-//     }
-// }
-
-pub fn remove_key(input: &str, key: &str) -> String {
-    let key_str = format!("{}=", key);
-    if let Some(start) = input.find(&key_str) {
-        let end = input[start..].find('&').unwrap_or(input.len());
-        let before = &input[..start];
-        let after = &input[start + key_str.len() + end..];
-        format!("{}{}", before, after)
-    } else {
-        input.to_string()
-    }
 }

@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use std::{
     collections::{BTreeMap, HashMap},
     pin::Pin,
+    sync::Arc,
 };
 
 use futures::Future;
@@ -14,7 +15,7 @@ use crate::endpoints::v5user;
 use super::http_manager::{HttpManager, Manager};
 #[async_trait]
 pub trait User {
-    fn new(http_manager: HttpManager) -> Self;
+    fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn create_sub_uid(
         &self,
         query: HashMap<String, String>,
@@ -61,17 +62,17 @@ pub trait User {
 }
 
 pub struct UserHTTP {
-    http_manager: HttpManager,
+    http_manager: Arc<HttpManager>,
 }
 
 #[async_trait]
 impl User for UserHTTP {
     ///
     ///
-    //// Initialize the UserHTTP by passing the HttpManager
+    //// Initialize the UserHTTP by passing the Arc<HttpManager>
     ///
     ///
-    fn new(http_manager: HttpManager) -> Self {
+    fn new(http_manager: Arc<HttpManager>) -> Self {
         UserHTTP { http_manager }
     }
 

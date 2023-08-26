@@ -1,5 +1,8 @@
 #![allow(unused)]
-use std::collections::{BTreeMap, HashMap};
+use std::{
+    collections::{BTreeMap, HashMap},
+    sync::Arc,
+};
 
 pub mod bybit;
 pub mod endpoints;
@@ -7,6 +10,7 @@ pub mod errors;
 pub mod helpers;
 
 use bybit::{
+    asset::{self, Asset},
     http_manager::{HttpManager, Manager},
     trade::{self, Trade},
 };
@@ -34,7 +38,7 @@ async fn start_app() -> Result<(), AppError> {
     let testnet_str =
         std::env::var("API_TEST").map_err(|_| AppError::EnvVarMissing("API_TEST".to_string()))?;
     let testnet = if testnet_str == "true" { true } else { false };
-    let manager = HttpManager::new(http_api_key, http_api_secret, testnet);
+    let manager = Arc::new(HttpManager::new(http_api_key, http_api_secret, testnet));
 
     // to get KLINe data
 
@@ -64,7 +68,9 @@ async fn start_app() -> Result<(), AppError> {
     query.insert("side".to_owned(), "Buy".to_owned());
     // query.insert("timeInForce".to_owned(), "FillOrKill".to_owned());
 
-    let trade: trade::TradeHTTP = trade::TradeHTTP::new(manager);
+    let trade: trade::TradeHTTP = trade::TradeHTTP::new(manager.clone());
+
+    // let asset: asset::AssetHTTP = asset::AssetHTTP::new(manager);
 
     match trade.place_order(query).await {
         Ok(result) => println!("{:?}", result),

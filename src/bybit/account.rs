@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use std::{
     collections::{BTreeMap, HashMap},
     pin::Pin,
+    sync::Arc,
 };
 
 use futures::Future;
@@ -14,7 +15,7 @@ use crate::endpoints::v5account;
 use super::http_manager::{HttpManager, Manager};
 #[async_trait]
 pub trait Account {
-    fn new(http_manager: HttpManager) -> Self;
+    fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn get_wallet_balance(
         &self,
         query: HashMap<String, String>,
@@ -75,7 +76,7 @@ pub trait Account {
 }
 
 pub struct AccountHTTP {
-    http_manager: HttpManager,
+    http_manager: Arc<HttpManager>,
 }
 
 #[async_trait]
@@ -85,7 +86,7 @@ impl Account for AccountHTTP {
     /// Initialize the AccountHTTP by passing the HttpManager
     ///
     ///
-    fn new(http_manager: HttpManager) -> Self {
+    fn new(http_manager: Arc<HttpManager>) -> Self {
         AccountHTTP { http_manager }
     }
 
