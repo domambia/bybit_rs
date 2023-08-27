@@ -4,14 +4,14 @@ use std::{
     sync::Arc,
 };
 
-use bybit::bybit::{
+use bybit_rs::bybit::{
     asset::{self, Asset},
     http_manager::{HttpManager, Manager},
     market::{self, Market},
     trade::{self, Trade},
 };
 
-use bybit::errors::app_error::AppError;
+use bybit_rs::errors::app_error::AppError;
 use serde_json::Value;
 
 fn main() {
