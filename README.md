@@ -150,7 +150,7 @@ match trade.cancel_all_orders(query).await {
 
 Check out the example rust files or the list of endpoints below for more information on available
 endpoints and methods. Usage examples on the `libary Manager` methods can
-be found in the [examples folder](https://github.com/domambia/bybit_rs/examples).
+be found in the [examples folder](https://github.com/domambia/bybit_rs/examples_folder).
 
 ## Contact
 

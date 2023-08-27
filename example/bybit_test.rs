@@ -4,18 +4,14 @@ use std::{
     sync::Arc,
 };
 
-pub mod bybit;
-pub mod endpoints;
-pub mod errors;
-pub mod helpers;
-
-use bybit::{
+use bybit::bybit::{
     asset::{self, Asset},
     http_manager::{HttpManager, Manager},
     market::{self, Market},
     trade::{self, Trade},
 };
-use errors::app_error::AppError;
+
+use bybit::errors::app_error::AppError;
 use serde_json::Value;
 
 fn main() {
