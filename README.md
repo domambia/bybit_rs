@@ -63,7 +63,7 @@ let testnet = ""
 let manager = Arc::new(HttpManager::new(http_api_key, http_api_secret, testnet));
 ```
 
-### TO MARKET GET KLINE DAT
+### Get Market Kline Data
 
 ```rust
 let mut query: HashMap<String, String> = HashMap::new();
@@ -83,7 +83,7 @@ match market.get_kline(query).await {
 
 ```
 
-### TO PLACE AN ORDER
+### Place and Order
 
 ```rust
 let mut query: HashMap<String, String> = HashMap::new();
@@ -102,7 +102,7 @@ match trade.place_order(query).await {
 }
 ```
 
-### TO AN ORDER
+### Get Single Order
 
 ```rust
 let mut query: HashMap<String, String> = HashMap::new();
@@ -117,7 +117,7 @@ match trade.get_open_orders(query).await {
 }
 ```
 
-### TO CANCEL AN ORDER
+### Cancel a Single
 
 ````rust
 let mut query: HashMap<String, String> = HashMap::new();
@@ -133,8 +133,9 @@ match trade.cancel_order(query).await {
     Ok(result) => println!("{:?}", result),
     Err(e) => println!("{:?}", e),
 }
+```
 
-### TO CANCEL ALL ORDERS
+### Cancel All Orders
 
 ```rust
 let mut query: HashMap<String, String> = HashMap::new();
