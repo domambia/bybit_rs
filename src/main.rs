@@ -12,6 +12,7 @@ pub mod helpers;
 use bybit::{
     asset::{self, Asset},
     http_manager::{HttpManager, Manager},
+    market::{self, Market},
     trade::{self, Trade},
 };
 use errors::app_error::AppError;
@@ -51,21 +52,28 @@ async fn start_app() -> Result<(), AppError> {
     query.insert("start".to_string(), "1670601600000".to_string());
     query.insert("end".to_string(), "1670608800000".to_string());
 
-    match manager
-        .submit_request(reqwest::Method::GET, "/v5/market/kline", query, true)
-        .await
-    {
-        Ok(result) => println!("{:?}", result["result"].clone()),
+    // match manager
+    //     .submit_request(reqwest::Method::GET, "/v5/market/kline", query, true)
+    //     .await
+    // {
+    //     Ok(result) => println!("{:?}", result["result"].clone()),
+    //     Err(e) => println!("{:?}", e),
+    // };
+
+    let market: market::MarketHTTP = market::MarketHTTP::new(manager.clone());
+
+    match market.get_kline(query).await {
+        Ok(result) => println!("{:?}", result),
         Err(e) => println!("{:?}", e),
-    };
+    }
 
     println!("TO PLACE AN ORDER");
     let mut query: HashMap<String, String> = HashMap::new();
     query.insert("category".to_owned(), "linear".to_owned());
     query.insert("symbol".to_owned(), "BTCUSDT".to_owned());
     query.insert("orderType".to_owned(), "Limit".to_owned());
-    query.insert("qty".to_owned(), "0.04".to_owned());
-    query.insert("price".to_owned(), "27200".to_owned());
+    query.insert("qty".to_owned(), "0.06".to_owned());
+    query.insert("price".to_owned(), "25000".to_owned());
     query.insert("side".to_owned(), "Buy".to_owned());
     // query.insert("timeInForce".to_owned(), "FillOrKill".to_owned());
 
@@ -73,12 +81,12 @@ async fn start_app() -> Result<(), AppError> {
 
     // let asset: asset::AssetHTTP = asset::AssetHTTP::new(manager);
 
-    match trade.place_order(query).await {
-        Ok(result) => println!("{:?}", result),
-        Err(e) => println!("{:?}", e),
-    }
+    // match trade.place_order(query).await {
+    //     Ok(result) => println!("{:?}", result),
+    //     Err(e) => println!("{:?}", e),
+    // }
 
-    println!("TO AN ORDER");
+    println!("TO AN ORDER::: Testing");
 
     ////
     ///
@@ -128,10 +136,10 @@ async fn start_app() -> Result<(), AppError> {
     query.insert("symbol".to_owned(), "".to_owned());
     query.insert("settleCoin".to_owned(), "USDT".to_owned());
 
-    match trade.cancel_all_orders(query).await {
-        Ok(result) => println!("{:?}", result),
-        Err(e) => println!("{:?}", e),
-    }
+    // match trade.cancel_all_orders(query).await {
+    //     Ok(result) => println!("{:?}", result),
+    //     Err(e) => println!("{:?}", e),
+    // }
 
     Ok(())
 }

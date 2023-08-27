@@ -191,7 +191,6 @@ impl Manager for HttpManager {
             headers.insert(header::CONTENT_TYPE, "application/json".parse()?);
             headers.insert("X-BAPI-API-KEY", self.api_key.parse()?);
             headers.insert("X-BAPI-SIGN", get_sing.parse()?);
-            headers.insert("X-BAPI-SIGN-TYPE", "2".parse()?);
             headers.insert("X-BAPI-TIMESTAMP", timestamp.to_string().parse()?);
             headers.insert("X-BAPI-RECV-WINDOW", recv_window.to_string().parse()?);
             let get_query_string = utils::generate_query_data(query.clone());
@@ -200,7 +199,8 @@ impl Manager for HttpManager {
                 format!("{}{}?{}", self.base_url, path, post_put_update_singature);
             let get_url = format!("{}{}?{}", self.base_url, path, get_query_string);
 
-            println!("Query string: {:?}", get_query_string);
+            println!("Query string: {:?}", get_url);
+            println!("headers: {:?}", headers);
 
             let response = match method {
                 Method::GET => self.client.get(&get_url).headers(headers).send().await,
