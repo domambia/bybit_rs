@@ -16,7 +16,7 @@ pub enum Account {
 impl std::fmt::Display for Account {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            Account::GetWalletBalance => write!(f, "/v5/account/wallet-balance"),
+            Account::GetWalletBalance => write!(f, "f"),
             Account::UpgradeToUnifiedAccount => write!(f, "/v5/account/upgrade-to-uta"),
             Account::GetBorrowHistory => write!(f, "/v5/account/borrow-history"),
             Account::GetCollateralInfo => write!(f, "/v5/account/collateral-info"),

@@ -1,5 +1,6 @@
 pub mod v5account;
 pub mod v5asset;
+pub mod v5broker;
 pub mod v5market;
 pub mod v5position;
 pub mod v5spot_leverage_token;

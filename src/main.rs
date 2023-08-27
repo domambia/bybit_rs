@@ -38,6 +38,7 @@ async fn start_app() -> Result<(), AppError> {
     let testnet_str =
         std::env::var("API_TEST").map_err(|_| AppError::EnvVarMissing("API_TEST".to_string()))?;
     let testnet = if testnet_str == "true" { true } else { false };
+
     let manager = Arc::new(HttpManager::new(http_api_key, http_api_secret, testnet));
 
     // to get KLINe data
