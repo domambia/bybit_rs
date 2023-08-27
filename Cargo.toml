@@ -12,6 +12,7 @@ homepage = "https://docs.rs/bybit_rs"
 license = "LICENCE.txt"
 keywords = ["rust", "bybit_rs", "rust bybit", "pybit rust"]
 categories = ["development-tools::cargo-plugins"]
+repository = "https://github.com/domambia/bybit_rs"
 
 [lib]
 name = "bybit_rs"
