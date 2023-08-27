@@ -12,7 +12,6 @@ homepage = "https://docs.rs/bybit_rs"
 license = "LICENCE.txt"
 keywords = ["rust", "bybit_rs", "rust bybit", "pybit rust"]
 categories = ["development-tools::cargo-plugins"]
-exclude = ["example/", ".env*"]
 
 [lib]
 name = "bybit_rs"
