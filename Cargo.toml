@@ -3,6 +3,16 @@ name = "bybit_rs"
 version = "0.1.0"
 authors = ["Omambia Dauglous <omambiadauglous@gmail.com>"]
 edition = "2018"
+rust-version = "1.67"
+
+description = "Fork of the Official Python3 API connector for Bybit's HTTP (bybit) and WebSockets APIs to rust"
+documentation = "https://docs.rs/bybit_rs"
+readme = "README.md"
+homepage = "https://docs.rs/bybit_rs"
+license = "LICENCE.txt"
+keywords = ["rust", "bybit_rs", "rust bybit", "pybit rust"]
+categories = ["development-tools::cargo-plugins"]
+exclude = ["example/", ".env*"]
 
 [lib]
 name = "bybit_rs"
