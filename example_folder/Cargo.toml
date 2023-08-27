@@ -1,0 +1,14 @@
+[package]
+name = "example_folder"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bybit_rs = "0.1.0"
+dotenv = "0.15.0"
+tokio = { version = "1.0.1", features = ["full"] }
+serde_json = "1.0.57"
+serde = "1.0.104"
+serde_derive = "1.0.104"
