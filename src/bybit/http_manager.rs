@@ -184,16 +184,16 @@ impl Manager for HttpManager {
             req_params = self.prepare_payload(method.as_str(), new_query.clone());
             let post_put_update_singature = self.auth(&req_params, recv_window, timestamp)?;
 
-            let get_sing = utils::gen_query_string(&req_params, &self.api_secret)
-                .map_err(|e| format!("Error: {:?}", e))?;
+            // let get_sing = utils::sign_for_query(&req_params, &self.api_secret)
+            //     .map_err(|e| format!("Error: {:?}", e))?;
 
             let mut headers = header::HeaderMap::new();
             headers.insert(header::CONTENT_TYPE, "application/json".parse()?);
             headers.insert("X-BAPI-API-KEY", self.api_key.parse()?);
-            headers.insert("X-BAPI-SIGN", get_sing.parse()?);
+            headers.insert("X-BAPI-SIGN", post_put_update_singature.parse()?);
             headers.insert("X-BAPI-TIMESTAMP", timestamp.to_string().parse()?);
             headers.insert("X-BAPI-RECV-WINDOW", recv_window.to_string().parse()?);
-            let get_query_string = utils::generate_query_data(query.clone());
+            let get_query_string = utils::generate_query_data(new_query.clone());
 
             let post_put_path_url =
                 format!("{}{}?{}", self.base_url, path, post_put_update_singature);

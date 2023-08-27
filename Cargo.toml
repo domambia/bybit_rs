@@ -1,6 +1,6 @@
 [package]
 name = "bybit_rs"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Omambia Dauglous <omambiadauglous@gmail.com>"]
 edition = "2018"
 rust-version = "1.67"
@@ -13,7 +13,7 @@ license = "MIT"
 keywords = ["rust", "bybit_rs", "pybit_rust"]
 categories = ["development-tools::cargo-plugins"]
 repository = "https://github.com/domambia/bybit_rs"
-
+exclude = ["example_folder"]
 [lib]
 name = "bybit_rs"
 path = "src/lib.rs"
@@ -27,6 +27,7 @@ thiserror = "1.0.13"
 serde_json = "1.0.57"
 serde = "1.0.104"
 serde_derive = "1.0.104"
+
 
 #Request
 reqwest = { version = "0.11.14", features = [
@@ -46,6 +47,10 @@ async-trait = "0.1"
 openssl = "0.10.56"
 url = "2.2.0"
 dotenv = "0.15.0"
+ring = "0.16.20"
+serde_urlencoded = "0.7.1"
+once_cell = "1.18.0"
+hmac-sha256 = "1.1.7"
 
 
 [[bin]]

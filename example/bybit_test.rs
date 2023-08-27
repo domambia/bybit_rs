@@ -77,10 +77,10 @@ async fn start_app() -> Result<(), AppError> {
 
     // let asset: asset::AssetHTTP = asset::AssetHTTP::new(manager);
 
-    // match trade.place_order(query).await {
-    //     Ok(result) => println!("{:?}", result),
-    //     Err(e) => println!("{:?}", e),
-    // }
+    match trade.place_order(query).await {
+        Ok(result) => println!("{:?}", result),
+        Err(e) => println!("{:?}", e),
+    }
 
     println!("TO AN ORDER::: Testing");
 
