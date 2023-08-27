@@ -159,3 +159,15 @@ You can reach out for support on the [Ngeni Labs Support Telegram](https://t.me/
 ## Credits
 
 Thanks goes to these wonderful contritors of pybit libary [official commutity library](https://github.com/bybit-exchange/pybit) & [NGENI LABs](https://ngeni.io) [github](https://github.com/devngeni) team for your technical support
+
+## Donations
+
+If you find this libary useful, donate to
+
+> USDT
+
+    1. TRC20 TVGdWAZ3MetiRyUhkR4CjR7YFi99TQvZ2L
+    2. ERC20: 0x43bFd041eB6F6ccdC247B4162EB7D056B4bF97BA
+
+> BTC: bc1q8mcktjuwh9ufy7tcz4ep7u5uhef3z2m8qdnurs
+> ETH:0x43bFd041eB6F6ccdC247B4162EB7D056B4bF97BA
