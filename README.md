@@ -1,6 +1,6 @@
 # Fork of pybit python libary in Rust
 
-> For the rustcean lovers and creators for bybit exchange version 5
+> For the rust lovers and creators for bybit exchange version 5
 
 Official Python3 API connector for Bybit's HTTP and WebSockets APIs.
 
