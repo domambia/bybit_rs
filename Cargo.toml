@@ -1,6 +1,6 @@
 [package]
 name = "bybit_rs"
-version = "0.1.5"
+version = "0.1.6"
 authors = [
     "Omambia Dauglous <omambiadauglous@gmail.com>",
     "NGENI Labs <https://ngeni.io>",
