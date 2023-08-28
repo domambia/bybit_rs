@@ -15,12 +15,18 @@ use crate::helpers::utils;
 
 #[async_trait]
 pub trait Manager {
-    fn auth(
+    async fn auth(
         &self,
         req_params: &BTreeMap<String, String>,
         recv_window: u64,
         timestamp: u128,
-        method: &str,
+    ) -> Result<String, String>;
+
+    async fn auth_get(
+        &self,
+        req_params: &BTreeMap<String, String>,
+        recv_window: u64,
+        timestamp: u128,
     ) -> Result<String, String>;
     fn prepare_payload(
         &self,
@@ -75,12 +81,11 @@ impl Manager for HttpManager {
     /// Generates authentication signature per Bybit API specifications
     ///
     ///
-    fn auth(
+    async fn auth(
         &self,
         req_params: &BTreeMap<String, String>,
         _recv_window: u64,
         _timestamp: u128,
-        method: &str,
     ) -> Result<String, String> {
         let api_key = &self.api_key;
         let api_secret = &self.api_secret;
@@ -89,38 +94,58 @@ impl Manager for HttpManager {
             return Err("Authenticated endpoints require keys.".to_string());
         }
 
-        match method {
-            "GET" => {
-                let mut query = Serializer::new(String::new());
-                for (key, value) in req_params.iter() {
-                    query.append_pair(key, value);
-                }
-
-                let param_string = query.finish();
-
-                let val = format!(
-                    "{time}{api_key}5000{params}",
-                    time = _timestamp,
-                    api_key = &api_key,
-                    params = param_string,
-                );
-
-                let key = ring::hmac::Key::new(ring::hmac::HMAC_SHA256, &api_secret.as_bytes());
-                let tag = ring::hmac::sign(&key, val.as_bytes());
-                Ok(hex::encode(tag.as_ref()))
-            }
-            _ => {
-                let mut query = Serializer::new(String::new());
-                for (key, value) in req_params.iter() {
-                    query.append_pair(key, value);
-                }
-
-                let param_string = query.finish();
-                let sign = utils::sign_query_string(&param_string, &api_secret)
-                    .map_err(|e| format!("Error: {:?}", e))?;
-                Ok(format!("{}&sign={}", param_string, sign))
-            }
+        let mut query = Serializer::new(String::new());
+        for (key, value) in req_params.iter() {
+            query.append_pair(key, value);
         }
+
+        let param_string = query.finish();
+        let sign = utils::sign_query_string(&param_string, &api_secret)
+            .map_err(|e| format!("Error: {:?}", e))?;
+        Ok(format!("{}&sign={}", param_string, sign))
+    }
+
+    async fn auth_get(
+        &self,
+        req_params: &BTreeMap<String, String>,
+        _recv_window: u64,
+        _timestamp: u128,
+    ) -> Result<String, String> {
+        let api_key = &self.api_key;
+        let api_secret = &self.api_secret;
+
+        if api_key.is_empty() || api_secret.is_empty() {
+            return Err("Authenticated endpoints require keys.".to_string());
+        }
+
+        let params: Vec<(String, String)> = req_params
+            .iter()
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect();
+
+        println!("Params: {:?}", params);
+        // correct
+
+        let query_string =
+            serde_urlencoded::to_string(params).map_err(|e| format!("Error: {:?}", e))?;
+        // correct
+
+        println!("Query String: {:?}", query_string);
+        let val = format!(
+            "{time}{api_key}{recv}{params}",
+            time = _timestamp,
+            api_key = &api_key,
+            recv = _recv_window,
+            params = query_string,
+        );
+
+        println!("VAL: {}", val);
+
+        let key = ring::hmac::Key::new(ring::hmac::HMAC_SHA256, &api_secret.as_bytes());
+        let tag = ring::hmac::sign(&key, val.as_bytes());
+        println!("TAG: {:?}", hex::encode(tag.as_ref()));
+
+        Ok(hex::encode(tag.as_ref()))
     }
 
     ///
@@ -197,38 +222,50 @@ impl Manager for HttpManager {
             new_query.insert("api_key".to_string(), self.api_key.to_string());
             req_params = self.prepare_payload(method.as_str(), new_query.clone());
             // signature for post,patch & put method
-            let sign: String = self.auth(&req_params, recv_window, timestamp, &new_method)?;
+            let sign: String = self.auth(&req_params, recv_window, timestamp).await?;
 
-            // signature for get methods
-            let sign_get: String = self.auth(
-                &self.prepare_payload(method.as_str(), query.clone()),
-                recv_window,
-                timestamp,
-                &new_method,
-            )?;
-
-            let mut headers = utils::build_private_headers(
-                &sign_get,
-                timestamp,
-                &self.api_key,
-                &recv_window.to_string(),
-            );
-            let query_params = serde_urlencoded::to_string(query.clone())?;
-
-            let post_put_pacth_url = format!("{}{}?{}", self.base_url, path, sign);
-            let get_url = format!("{}{}?{}", self.base_url, path, query_params);
+            let mut url = format!("{}{}?{}", self.base_url, path, &sign);
 
             let response = match method {
                 Method::GET => {
-                    self.client
-                        .get(&get_url)
-                        .headers(headers.clone())
-                        .send()
-                        .await
+                    let sign_get: String = self
+                        .auth_get(
+                            &self.prepare_payload(method.as_str(), query.clone()),
+                            recv_window,
+                            timestamp,
+                        )
+                        .await?;
+
+                    println!("sign_get: {}", sign_get);
+
+                    //  build private headers
+                    let mut headers = utils::build_private_headers(
+                        &sign_get,
+                        timestamp,
+                        &self.api_key,
+                        &recv_window.to_string(),
+                    );
+
+                    println!("Headers: {:?}", headers);
+
+                    // generate GET query params
+                    let query_params = serde_urlencoded::to_string(query.clone())?;
+                    let url = format!(
+                        "{}{}?{}",
+                        self.base_url,
+                        path,
+                        if new_method == "GET" {
+                            &query_params
+                        } else {
+                            &sign
+                        }
+                    );
+
+                    self.client.get(&url).headers(headers.clone()).send().await
                 }
-                Method::POST => self.client.post(&post_put_pacth_url).send().await,
-                Method::PUT => self.client.put(&post_put_pacth_url).send().await,
-                Method::DELETE => self.client.delete(&post_put_pacth_url).send().await,
+                Method::POST => self.client.post(&url).send().await,
+                Method::PUT => self.client.put(&url).send().await,
+                Method::DELETE => self.client.delete(&url).send().await,
                 _ => {
                     return Err(Box::new(std::io::Error::new(
                         std::io::ErrorKind::Other,

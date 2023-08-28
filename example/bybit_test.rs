@@ -82,6 +82,15 @@ async fn start_app() -> Result<(), AppError> {
         Ok(result) => println!("{:?}", result),
         Err(e) => println!("{:?}", e),
     }
+    println!("============ GET ORDER HISTORY =========== ");
+    let mut query: HashMap<String, String> = HashMap::new();
+    query.insert("category".to_owned(), "linear".to_owned());
+    query.insert("limit".to_owned(), "1".to_owned());
+
+    match trade.get_order_history(query).await {
+        Ok(result) => println!("{:?}", result),
+        Err(e) => println!("{:?}", e),
+    }
 
     println!("============ CANCEL A SINGLE ORDER  ================");
     let mut query: HashMap<String, String> = HashMap::new();
