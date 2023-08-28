@@ -1,4 +1,4 @@
-# Fork of pybit python libary in Rust,
+# Fork of pybit python libary in Rust
 
 > For the rustcean lovers and creators for bybit exchange version 5
 
@@ -155,7 +155,7 @@ be found in the [examples folder](https://github.com/domambia/bybit_rs/examples_
 
 ## Contact
 
-You can reach out for support on the [Ngeni Labs Support Telegram](https://t.me/ng.NgeniLabs Dev Support) group chat.
+You can reach out for support on the [Ngeni Labs Support Telegram](https://t.me/+dvC71Bi9Tgo2NzFk) group chat.
 
 ## Credits
 

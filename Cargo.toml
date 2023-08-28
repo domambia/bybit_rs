@@ -1,7 +1,11 @@
 [package]
 name = "bybit_rs"
 version = "0.1.4"
-authors = ["Omambia Dauglous <omambiadauglous@gmail.com>"]
+authors = [
+    "Omambia Dauglous <omambiadauglous@gmail.com>",
+    "NGENI Labs <https://ngeni.io>",
+    "Dennis Mwangi <dennismwangidev@gmail.com>",
+]
 edition = "2018"
 rust-version = "1.67"
 
