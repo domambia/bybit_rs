@@ -15,7 +15,7 @@ use crate::helpers::utils;
 
 #[async_trait]
 pub trait Manager {
-    fn auth(
+    async fn auth(
         &self,
         req_params: &BTreeMap<String, String>,
         recv_window: u64,
@@ -75,7 +75,7 @@ impl Manager for HttpManager {
     /// Generates authentication signature per Bybit API specifications
     ///
     ///
-    fn auth(
+    async fn auth(
         &self,
         req_params: &BTreeMap<String, String>,
         _recv_window: u64,
@@ -91,6 +91,7 @@ impl Manager for HttpManager {
 
         match method {
             "GET" => {
+                println!("GET METHOD");
                 let mut query = Serializer::new(String::new());
                 for (key, value) in req_params.iter() {
                     query.append_pair(key, value);
@@ -99,9 +100,10 @@ impl Manager for HttpManager {
                 let param_string = query.finish();
 
                 let val = format!(
-                    "{time}{api_key}5000{params}",
+                    "{time}{api_key}{recv}{params}",
                     time = _timestamp,
                     api_key = &api_key,
+                    recv = _recv_window,
                     params = param_string,
                 );
 
@@ -197,38 +199,48 @@ impl Manager for HttpManager {
             new_query.insert("api_key".to_string(), self.api_key.to_string());
             req_params = self.prepare_payload(method.as_str(), new_query.clone());
             // signature for post,patch & put method
-            let sign: String = self.auth(&req_params, recv_window, timestamp, &new_method)?;
+            let sign: String = self
+                .auth(&req_params, recv_window, timestamp, &new_method)
+                .await?;
 
             // signature for get methods
-            let sign_get: String = self.auth(
-                &self.prepare_payload(method.as_str(), query.clone()),
-                recv_window,
-                timestamp,
-                &new_method,
-            )?;
+            let sign_get: String = self
+                .auth(
+                    &self.prepare_payload(method.as_str(), query.clone()),
+                    recv_window,
+                    timestamp,
+                    &new_method,
+                )
+                .await?;
 
+            //  build private headers
             let mut headers = utils::build_private_headers(
                 &sign_get,
                 timestamp,
                 &self.api_key,
                 &recv_window.to_string(),
             );
+            // generate GET query params
             let query_params = serde_urlencoded::to_string(query.clone())?;
 
-            let post_put_pacth_url = format!("{}{}?{}", self.base_url, path, sign);
-            let get_url = format!("{}{}?{}", self.base_url, path, query_params);
+            let url = format!(
+                "{}{}?{}",
+                self.base_url,
+                path,
+                if new_method == "GET" {
+                    &query_params
+                } else {
+                    &sign
+                }
+            );
+
+            println!("URL: {}", url);
 
             let response = match method {
-                Method::GET => {
-                    self.client
-                        .get(&get_url)
-                        .headers(headers.clone())
-                        .send()
-                        .await
-                }
-                Method::POST => self.client.post(&post_put_pacth_url).send().await,
-                Method::PUT => self.client.put(&post_put_pacth_url).send().await,
-                Method::DELETE => self.client.delete(&post_put_pacth_url).send().await,
+                Method::GET => self.client.get(&url).headers(headers.clone()).send().await,
+                Method::POST => self.client.post(&url).send().await,
+                Method::PUT => self.client.put(&url).send().await,
+                Method::DELETE => self.client.delete(&url).send().await,
                 _ => {
                     return Err(Box::new(std::io::Error::new(
                         std::io::ErrorKind::Other,
