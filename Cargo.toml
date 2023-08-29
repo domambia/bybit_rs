@@ -41,7 +41,7 @@ reqwest = { version = "0.11.14", features = [
     "blocking",
     "stream",
 ] }
-
+http = "0.2.9"
 # encryption
 sha2 = "0.9.3"
 hmac = "0.10.1"

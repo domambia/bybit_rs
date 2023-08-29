@@ -101,7 +101,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let endpoint = v5spot_margin_trade::SpotMarginTrade::ToggleMarginTrade.to_string();
         self.http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await
     }
 
@@ -121,7 +121,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let endpoint = v5spot_margin_trade::SpotMarginTrade::SetLeverage.to_string();
         self.http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await
     }
 
@@ -218,7 +218,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
         let mut endpoint = v5spot_margin_trade::SpotMarginTrade::NormalBorrow.to_string();
         endpoint = endpoint.replace("$instrument_id", &query["instrument_id"]);
         self.http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await
     }
 
@@ -239,7 +239,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
         let mut endpoint = v5spot_margin_trade::SpotMarginTrade::NormalRepay.to_string();
         endpoint = endpoint.replace("$instrument_id", &query["instrument_id"]);
         self.http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await
     }
 
@@ -301,7 +301,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
             v5spot_margin_trade::SpotMarginTrade::NormalToggleMarginTrade.to_string();
         endpoint = endpoint.replace("$instrument_id", &query["instrument_id"]);
         self.http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await
     }
 }

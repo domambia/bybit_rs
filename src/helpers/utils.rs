@@ -47,9 +47,9 @@ fn bytes_to_hex(bytes: Vec<u8>) -> String {
 ///
 ///
 pub fn build_private_headers(
+    api_key: &str,
     signature: &str,
     timestamp: u128,
-    api_key: &str,
     recv_window: &str,
 ) -> HeaderMap {
     let mut headers = HeaderMap::new();

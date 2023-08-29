@@ -168,11 +168,11 @@ impl Asset for AssetHTTP {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5asset::Asset::GetCoinExchangeRecords.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -192,11 +192,11 @@ impl Asset for AssetHTTP {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5asset::Asset::GetOptionDeliveryRecord.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -216,11 +216,11 @@ impl Asset for AssetHTTP {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5asset::Asset::GetUsdcContractSettlement.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -342,11 +342,11 @@ impl Asset for AssetHTTP {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5asset::Asset::CreateInternalTransfer.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -408,11 +408,11 @@ impl Asset for AssetHTTP {
         query: HashMap<String, String>,
     ) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5asset::Asset::EnableUtForSubUid.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -438,11 +438,11 @@ impl Asset for AssetHTTP {
         query: HashMap<String, String>,
     ) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5asset::Asset::CreateUniversalTransfer.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -505,11 +505,11 @@ impl Asset for AssetHTTP {
         query: HashMap<String, String>,
     ) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5asset::Asset::SetDepositAccount.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -714,11 +714,11 @@ impl Asset for AssetHTTP {
         query: HashMap<String, String>,
     ) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5asset::Asset::Withdraw.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -738,11 +738,11 @@ impl Asset for AssetHTTP {
         query: HashMap<String, String>,
     ) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5asset::Asset::CancelWithdrawal.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }

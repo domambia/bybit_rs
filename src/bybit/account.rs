@@ -129,7 +129,7 @@ impl Account for AccountHTTP {
         let endpoint = v5account::Account::UpgradeToUnifiedAccount.to_string();
         let result = self
             .http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await?;
         Ok(result)
     }
@@ -265,7 +265,7 @@ impl Account for AccountHTTP {
         let endpoint = v5account::Account::SetMarginMode.to_string();
         let result = self
             .http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await?;
         Ok(result)
     }
@@ -296,7 +296,7 @@ impl Account for AccountHTTP {
         let endpoint = v5account::Account::SetMMP.to_string();
         let result = self
             .http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await?;
         Ok(result)
     }
@@ -318,7 +318,7 @@ impl Account for AccountHTTP {
         let endpoint = v5account::Account::ResetMMP.to_string();
         let result = self
             .http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await?;
         Ok(result)
     }
