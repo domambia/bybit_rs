@@ -58,11 +58,11 @@ async fn start_app() -> Result<(), AppError> {
     let mut query: HashMap<String, String> = HashMap::new();
     query.insert("category".to_owned(), "linear".to_owned());
     query.insert("symbol".to_owned(), "BTCUSDT".to_owned());
-    query.insert("orderType".to_owned(), "Market".to_owned());
+    query.insert("orderType".to_owned(), "Limit".to_owned());
     query.insert("qty".to_owned(), "0.06".to_owned());
     query.insert("price".to_owned(), "25000".to_owned());
     query.insert("side".to_owned(), "Buy".to_owned());
-    query.insert("timeInForce".to_owned(), "FOK".to_owned());
+    query.insert("timeInForce".to_owned(), "GTC".to_owned());
 
     let trade: trade::TradeHTTP = trade::TradeHTTP::new(manager.clone());
 
