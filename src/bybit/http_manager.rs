@@ -200,12 +200,12 @@ impl Manager for HttpManager {
         method: Method,
         path: &str,
         auth: bool,
-        json_input:  HashMap<String, String>,
+        json_input: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
         let timestamp = utils::generate_timestamp()? as u128;
-    
-        let json_string = serde_json::to_string(&json_input)?;  // Convert the HashMap into a JSON string.
-    
+
+        let json_string = serde_json::to_string(&json_input)?; // Convert the HashMap into a JSON string.
+
         let val = format!(
             "{time}{api_key}{recv_window}{params}",
             time = timestamp,
@@ -213,17 +213,17 @@ impl Manager for HttpManager {
             recv_window = self.recv_window,
             params = json_string,
         );
-    
+
         let signature = self
             .generate_signature(&self.api_secret, &val)
             .await
             .map_err(|e| format!("Error: {:?}", e))?;
-    
+
         let request_url = format!("{}{}", self.base_url, path);
         let response = self
             .client
             .post(&request_url)
-            .json(&json_input)  // Pass a reference to the HashMap.
+            .json(&json_input) // Pass a reference to the HashMap.
             .headers(utils::build_private_headers(
                 &self.api_key,
                 &signature,
@@ -232,11 +232,10 @@ impl Manager for HttpManager {
             ))
             .send()
             .await?;
-    
+
         let body_text = response.text().await?;
         let body: Value = serde_json::from_str(&body_text)?;
-    
+
         Ok(body)
     }
-    
 }

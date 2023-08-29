@@ -111,7 +111,7 @@ impl SpotLeverageTokenTrade for SpotLeverageTokenTradeHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let endpoint = v5spot_leverage_token::SpotLeverageToken::Purchase.to_string();
         self.http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await
     }
 
@@ -132,7 +132,7 @@ impl SpotLeverageTokenTrade for SpotLeverageTokenTradeHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let endpoint = v5spot_leverage_token::SpotLeverageToken::Redeem.to_string();
         self.http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await
     }
 

@@ -200,7 +200,7 @@ impl User for UserHTTP {
         let endpoint = v5user::User::ModifyMasterApiKey.to_string();
         let result = self
             .http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await?;
         Ok(result)
     }
@@ -223,7 +223,7 @@ impl User for UserHTTP {
         let endpoint = v5user::User::ModifySubApiKey.to_string();
         let result = self
             .http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await?;
         Ok(result)
     }
@@ -242,7 +242,7 @@ impl User for UserHTTP {
         let endpoint = v5user::User::DeleteMasterApiKey.to_string();
         let result = self
             .http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await?;
         Ok(result)
     }
@@ -261,7 +261,7 @@ impl User for UserHTTP {
         let endpoint = v5user::User::DeleteSubApiKey.to_string();
         let result = self
             .http_manager
-            .submit_request(Method::POST, &endpoint, query, true)
+            .submit_post_request(Method::POST, &endpoint, true, query)
             .await?;
         Ok(result)
     }

@@ -115,11 +115,11 @@ impl Trade for TradeHTTP {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5trade::Trade::AmendOrder.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -252,11 +252,11 @@ impl Trade for TradeHTTP {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5trade::Trade::BatchAmendOrder.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -277,11 +277,11 @@ impl Trade for TradeHTTP {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5trade::Trade::CancelAllOrders.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }
@@ -325,11 +325,11 @@ impl Trade for TradeHTTP {
         query: HashMap<String, String>,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.http_manager
-            .submit_request(
+            .submit_post_request(
                 Method::POST,
                 &v5trade::Trade::SetDcp.to_string(),
-                query,
                 true,
+                query,
             )
             .await
     }

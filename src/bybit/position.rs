@@ -125,7 +125,7 @@ impl Position for PositionHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
-            .submit_request(Method::POST, &path, query, true)
+            .submit_post_request(Method::POST, &path, true, query)
             .await
     }
 
@@ -151,7 +151,7 @@ impl Position for PositionHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
-            .submit_request(Method::POST, &path, query, true)
+            .submit_post_request(Method::POST, &path, true, query)
             .await
     }
 
@@ -177,7 +177,7 @@ impl Position for PositionHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
-            .submit_request(Method::POST, &path, query, true)
+            .submit_post_request(Method::POST, &path, true, query)
             .await
     }
     /// It supports to switch the position mode for USDT perpetual and Inverse futures.
@@ -200,7 +200,7 @@ impl Position for PositionHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
-            .submit_request(Method::POST, &path, query, true)
+            .submit_post_request(Method::POST, &path, true, query)
             .await
     }
     /// The risk limit will limit the maximum position value you can hold under different margin requirements.
@@ -227,7 +227,7 @@ impl Position for PositionHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
-            .submit_request(Method::POST, &path, query, true)
+            .submit_post_request(Method::POST, &path, true, query)
             .await
     }
     /// Set the trading stop condition
@@ -248,7 +248,7 @@ impl Position for PositionHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
-            .submit_request(Method::POST, &path, query, true)
+            .submit_post_request(Method::POST, &path, true, query)
             .await
     }
 
@@ -270,7 +270,7 @@ impl Position for PositionHTTP {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
-            .submit_request(Method::POST, &path, query, true)
+            .submit_post_request(Method::POST, &path, true, query)
             .await
     }
 
