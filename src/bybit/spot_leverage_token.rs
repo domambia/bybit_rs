@@ -12,34 +12,40 @@ use serde_json::Value;
 
 use crate::endpoints::v5spot_leverage_token;
 
-use super::http_manager::{HttpManager, Manager};
+use super::{
+    Result,
+    http_manager::{HttpManager, Manager}
+};
+
+
+
 #[async_trait]
 pub trait SpotLeverageTokenTrade {
     fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn get_leveraged_token_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_leveraged_token_market(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn purchase_leveraged_token(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn redeem_leveraged_token(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_purchase_redemption_records(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 }
 
 pub struct SpotLeverageTokenTradeHTTP {
@@ -66,7 +72,7 @@ impl SpotLeverageTokenTrade for SpotLeverageTokenTradeHTTP {
     async fn get_leveraged_token_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5spot_leverage_token::SpotLeverageToken::GetLeveragedTokenInfo.to_string();
         self.http_manager
             .submit_request(Method::GET, &endpoint, query, true)
@@ -86,7 +92,7 @@ impl SpotLeverageTokenTrade for SpotLeverageTokenTradeHTTP {
     async fn get_leveraged_token_market(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint =
             v5spot_leverage_token::SpotLeverageToken::GetLeveragedTokenMarket.to_string();
         self.http_manager
@@ -108,7 +114,7 @@ impl SpotLeverageTokenTrade for SpotLeverageTokenTradeHTTP {
     async fn purchase_leveraged_token(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5spot_leverage_token::SpotLeverageToken::Purchase.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &endpoint, true, query)
@@ -129,7 +135,7 @@ impl SpotLeverageTokenTrade for SpotLeverageTokenTradeHTTP {
     async fn redeem_leveraged_token(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5spot_leverage_token::SpotLeverageToken::Redeem.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &endpoint, true, query)
@@ -148,7 +154,7 @@ impl SpotLeverageTokenTrade for SpotLeverageTokenTradeHTTP {
     async fn get_purchase_redemption_records(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint =
             v5spot_leverage_token::SpotLeverageToken::GetPurchaseRedemptionRecords.to_string();
         self.http_manager

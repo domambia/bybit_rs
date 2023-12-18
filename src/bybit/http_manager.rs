@@ -14,8 +14,12 @@ use sha2::Sha256;
 
 use crate::helpers::utils;
 
+type Error = Box<dyn std::error::Error + Send + Sync>;
+pub type HTTPManagerResult<T> = std::result::Result<T, Error>;
+
 #[async_trait]
 pub trait Manager {
+
     async fn auth(
         &self,
         req_params: &BTreeMap<String, String>,
@@ -28,13 +32,13 @@ pub trait Manager {
         path: &str,
         query: HashMap<String, String>,
         auth: bool,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>>;
+    ) -> HTTPManagerResult<Value>;
     async fn sign(
         &self,
         method: Method,
         path: &str,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> HTTPManagerResult<Value> {
         self.submit_request(method, path, query, true).await
     }
 
@@ -44,7 +48,7 @@ pub trait Manager {
         path: &str,
         auth: bool,
         json_input: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>>;
+    ) -> HTTPManagerResult<Value>;
 }
 pub struct HttpManager {
     pub api_key: String,
@@ -141,7 +145,7 @@ impl Manager for HttpManager {
         path: &str,
         parameters: HashMap<String, String>,
         auth: bool,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> HTTPManagerResult<Value> {
         let request_url = format!("{}{}", self.base_url, path);
 
         let mut request_builder = self.client.request(method.clone(), &request_url);
@@ -169,7 +173,7 @@ impl Manager for HttpManager {
                 &self.recv_window.to_string(),
             );
             request_builder = request_builder.headers(headers);
-        }
+        } // do we need to handle the else block if the one is not authenticated?
 
         let response = match method {
             Method::GET | Method::DELETE => request_builder
@@ -201,7 +205,7 @@ impl Manager for HttpManager {
         path: &str,
         auth: bool,
         json_input: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> HTTPManagerResult<Value> {
         let timestamp = utils::generate_timestamp()? as u128;
 
         let json_string = serde_json::to_string(&json_input)?; // Convert the HashMap into a JSON string.

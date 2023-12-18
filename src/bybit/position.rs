@@ -12,58 +12,63 @@ use serde_json::Value;
 
 use crate::endpoints::v5trade;
 
-use super::http_manager::{HttpManager, Manager};
+use super::{
+    Result,
+    http_manager::{HttpManager, Manager}
+};
+
+
 #[async_trait]
 pub trait Position {
     fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn get_position(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn set_leverage(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn switch_margin_mode(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn set_tp_sl_mode(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn switch_position_mode(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn set_risk_limit(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn set_trading_stop(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
     async fn set_auto_add_margin(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_executions(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_closed_pnl(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 }
 
 pub struct PositionHTTP {
@@ -93,7 +98,7 @@ impl Position for PositionHTTP {
     async fn get_position(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_request(Method::GET, &path, query, true)
@@ -122,7 +127,7 @@ impl Position for PositionHTTP {
     async fn set_leverage(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
@@ -148,7 +153,7 @@ impl Position for PositionHTTP {
     async fn switch_margin_mode(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
@@ -174,7 +179,7 @@ impl Position for PositionHTTP {
     async fn set_tp_sl_mode(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
@@ -197,7 +202,7 @@ impl Position for PositionHTTP {
     async fn switch_position_mode(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
@@ -224,7 +229,7 @@ impl Position for PositionHTTP {
     async fn set_risk_limit(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
@@ -245,7 +250,7 @@ impl Position for PositionHTTP {
     async fn set_trading_stop(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
@@ -267,7 +272,7 @@ impl Position for PositionHTTP {
     async fn set_auto_add_margin(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
@@ -292,7 +297,7 @@ impl Position for PositionHTTP {
     async fn get_executions(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_request(Method::GET, &path, query, true)
@@ -316,7 +321,7 @@ impl Position for PositionHTTP {
     async fn get_closed_pnl(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let path = v5trade::Trade::GetOpenOrders.to_string();
         self.http_manager
             .submit_request(Method::GET, &path, query, true)

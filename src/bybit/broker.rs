@@ -12,7 +12,10 @@ use serde_json::Value;
 
 use crate::endpoints::v5broker;
 
-use super::http_manager::{HttpManager, Manager};
+use super::{
+    Result,
+    http_manager::{HttpManager, Manager}
+};
 
 #[async_trait]
 pub trait Broker {
@@ -20,7 +23,7 @@ pub trait Broker {
     async fn get_broker_earnings(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 }
 
 pub struct BrokerHTTP {
@@ -41,7 +44,7 @@ impl Broker for BrokerHTTP {
     async fn get_broker_earnings(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5broker::Broker::GetBrokerEarnings.to_string();
         let result = self
             .http_manager
