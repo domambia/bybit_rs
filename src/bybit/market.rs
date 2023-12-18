@@ -12,10 +12,10 @@ use serde_json::Value;
 
 use crate::endpoints::v5market;
 
-use super::http_manager::{HttpManager, Manager};
-
-type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
-pub type MarketResult<T> = std::result::Result<T, Error>;
+use super::{
+    Result,
+    http_manager::{HttpManager, Manager}
+};
 
 #[async_trait]
 pub trait Market {
@@ -23,65 +23,65 @@ pub trait Market {
     async fn get_kline(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
     async fn get_mark_price_kline(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
     async fn get_index_price_kline(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
     async fn get_premium_index_price_kline(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
     async fn get_instruments_info(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
     async fn get_orderbook(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
     async fn get_tickers(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
     async fn get_funding_rate_history(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
 
     async fn get_public_trade_history(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
 
     async fn get_open_interest(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
 
     async fn get_historical_volatility(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
 
     async fn get_insurance(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
 
     async fn get_risk_limit(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
 
     async fn get_option_delivery_price(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value>;
+    ) -> Result<Value>;
 }
 
 pub struct MarketHTTP {
@@ -113,7 +113,7 @@ impl Market for MarketHTTP {
     async fn get_kline(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         let url = v5market::MarketEnum::GetKline.to_string();
         self.http_manager
             .submit_request(Method::GET, &url, query, true)
@@ -134,7 +134,7 @@ impl Market for MarketHTTP {
     async fn get_mark_price_kline(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         let url = v5market::MarketEnum::GetMarkPriceKline.to_string();
         self.http_manager
             .submit_request(Method::GET, &url, query, true)
@@ -155,7 +155,7 @@ impl Market for MarketHTTP {
     async fn get_index_price_kline(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         let url = v5market::MarketEnum::GetIndexPriceKline.to_string();
         self.http_manager
             .submit_request(Method::GET, &url, query, true)
@@ -176,7 +176,7 @@ impl Market for MarketHTTP {
     async fn get_premium_index_price_kline(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         let url = v5market::MarketEnum::GetPremiumIndexPriceKline.to_string();
         self.http_manager
             .submit_request(Method::GET, &url, query, true)
@@ -195,7 +195,7 @@ impl Market for MarketHTTP {
     async fn get_instruments_info(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         let url = v5market::MarketEnum::GetInstrumentsInfo.to_string();
         self.http_manager
             .submit_request(Method::GET, &url, query, true)
@@ -215,7 +215,7 @@ impl Market for MarketHTTP {
     async fn get_orderbook(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         let url = v5market::MarketEnum::GetOrderbook.to_string();
         self.http_manager
             .submit_request(Method::GET, &url, query, true)
@@ -234,7 +234,7 @@ impl Market for MarketHTTP {
     async fn get_tickers(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         let url = v5market::MarketEnum::GetTickers.to_string();
         self.http_manager
             .submit_request(Method::GET, &url, query, true)
@@ -256,7 +256,7 @@ impl Market for MarketHTTP {
     async fn get_funding_rate_history(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         let url = v5market::MarketEnum::GetFundingRateHistory.to_string();
         self.http_manager
             .submit_request(Method::GET, &url, query, true)
@@ -276,7 +276,7 @@ impl Market for MarketHTTP {
     async fn get_public_trade_history(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         let url = v5market::MarketEnum::GetPublicTradingHistory.to_string();
         self.http_manager
             .submit_request(Method::GET, &url, query, true)
@@ -297,7 +297,7 @@ impl Market for MarketHTTP {
     async fn get_open_interest(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -321,7 +321,7 @@ impl Market for MarketHTTP {
     async fn get_historical_volatility(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -343,7 +343,7 @@ impl Market for MarketHTTP {
     async fn get_insurance(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -363,7 +363,7 @@ impl Market for MarketHTTP {
     async fn get_risk_limit(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -384,7 +384,7 @@ impl Market for MarketHTTP {
     async fn get_option_delivery_price(
         &self,
         query: HashMap<String, String>,
-    ) -> MarketResult<Value> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
