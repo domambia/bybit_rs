@@ -68,8 +68,7 @@ impl HttpManager {
     ///
     pub fn new(api_key: String, api_secret: String, testnet: bool) -> Self {
         let sub_domain = if testnet { "api-testnet" } else { "api" };
-        let domain = if testnet { "bybit" } else { "bybit" };
-        let url = format!("https://{}.{}.com", sub_domain, domain);
+        let url = format!("https://{}.{}.com", sub_domain, "bybit");
         let client = reqwest::Client::new();
 
         HttpManager {
@@ -122,7 +121,7 @@ impl Manager for HttpManager {
             time = timestamp,
             api_key = self.api_key,
             recv_window = recv_window,
-            params = param_string.to_string(),
+            params = param_string,
         );
         let sign_result = self.generate_signature(&self.api_secret, &val).await;
         let sign = sign_result.map_err(|e| format!("Error: {:?}", e))?;
