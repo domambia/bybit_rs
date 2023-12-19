@@ -12,57 +12,60 @@ use serde_json::Value;
 
 use crate::endpoints::v5trade;
 
-use super::http_manager::{HttpManager, Manager};
+use super::{
+    Result,
+    http_manager::{HttpManager, Manager}
+};
 #[async_trait]
 pub trait Trade {
     fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn place_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
     async fn amend_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn cancel_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_open_orders(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn cancel_all_orders(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_order_history(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn amend_batch_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn cancel_batch_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
     async fn get_borrow_quota(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn set_dcp(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 }
 pub struct TradeHTTP {
     http_manager: Arc<HttpManager>,
@@ -92,7 +95,7 @@ impl Trade for TradeHTTP {
     async fn place_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5trade::Trade::PlaceOrder.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &endpoint, true, query)
@@ -113,7 +116,7 @@ impl Trade for TradeHTTP {
     async fn amend_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
@@ -141,7 +144,7 @@ impl Trade for TradeHTTP {
     async fn cancel_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
@@ -165,7 +168,7 @@ impl Trade for TradeHTTP {
     async fn get_open_orders(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -193,7 +196,7 @@ impl Trade for TradeHTTP {
     async fn cancel_all_orders(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
@@ -222,7 +225,7 @@ impl Trade for TradeHTTP {
     async fn get_order_history(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -250,7 +253,7 @@ impl Trade for TradeHTTP {
     async fn amend_batch_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
@@ -275,7 +278,7 @@ impl Trade for TradeHTTP {
     async fn cancel_batch_order(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
@@ -300,7 +303,7 @@ impl Trade for TradeHTTP {
     async fn get_borrow_quota(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -323,7 +326,7 @@ impl Trade for TradeHTTP {
     async fn set_dcp(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,

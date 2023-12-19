@@ -12,53 +12,56 @@ use serde_json::Value;
 
 use crate::endpoints::v5user;
 
-use super::http_manager::{HttpManager, Manager};
+use super::{
+    Result,
+    http_manager::{HttpManager, Manager}
+};
 #[async_trait]
 pub trait User {
     fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn create_sub_uid(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn create_sub_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_sub_uid_list(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
     async fn freeze_sub_uid(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_api_key_information(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn modify_master_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn modify_sub_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn delete_master_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn delete_sub_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 }
 
 pub struct UserHTTP {
@@ -90,7 +93,7 @@ impl User for UserHTTP {
     async fn create_sub_uid(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5user::User::CreateSubUid.to_string();
         let result = self
             .http_manager
@@ -114,7 +117,7 @@ impl User for UserHTTP {
     async fn create_sub_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5user::User::CreateSubApiKey.to_string();
         let result = self
             .http_manager
@@ -132,7 +135,7 @@ impl User for UserHTTP {
     async fn get_sub_uid_list(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5user::User::GetSubUidList.to_string();
         let result = self
             .http_manager
@@ -155,7 +158,7 @@ impl User for UserHTTP {
     async fn freeze_sub_uid(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5user::User::FreezeSubUid.to_string();
         let result = self
             .http_manager
@@ -174,7 +177,7 @@ impl User for UserHTTP {
     async fn get_api_key_information(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5user::User::GetApiKeyInformation.to_string();
         let result = self
             .http_manager
@@ -196,7 +199,7 @@ impl User for UserHTTP {
     async fn modify_master_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5user::User::ModifyMasterApiKey.to_string();
         let result = self
             .http_manager
@@ -219,7 +222,7 @@ impl User for UserHTTP {
     async fn modify_sub_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5user::User::ModifySubApiKey.to_string();
         let result = self
             .http_manager
@@ -238,7 +241,7 @@ impl User for UserHTTP {
     async fn delete_master_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5user::User::DeleteMasterApiKey.to_string();
         let result = self
             .http_manager
@@ -257,7 +260,7 @@ impl User for UserHTTP {
     async fn delete_sub_api_key(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5user::User::DeleteSubApiKey.to_string();
         let result = self
             .http_manager

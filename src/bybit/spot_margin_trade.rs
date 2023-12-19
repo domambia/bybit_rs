@@ -12,64 +12,68 @@ use serde_json::Value;
 
 use crate::endpoints::v5spot_margin_trade;
 
-use super::http_manager::{HttpManager, Manager};
+use super::{
+    Result,
+    http_manager::{HttpManager, Manager}
+};
+
 #[async_trait]
 pub trait SpotMarginTrade {
     fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn spot_margin_trade_toggle_margin_trade(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_set_leverage(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_normal_get_margin_coin_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_normal_get_borrowable_coin_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_normal_get_interest_quota(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_normal_get_loan_account_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_normal_borrow(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_normal_repay(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_normal_get_borrow_order_detail(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_normal_get_repayment_order_detail(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn spot_margin_trade_normal_toggle_margin_trade(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 }
 
 pub struct SpotMarginTradeHTTP {
@@ -98,7 +102,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_toggle_margin_trade(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5spot_margin_trade::SpotMarginTrade::ToggleMarginTrade.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &endpoint, true, query)
@@ -118,7 +122,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_set_leverage(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5spot_margin_trade::SpotMarginTrade::SetLeverage.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &endpoint, true, query)
@@ -138,7 +142,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_normal_get_margin_coin_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5spot_margin_trade::SpotMarginTrade::NormalGetMarginCoinInfo.to_string();
         self.http_manager
             .submit_request(Method::GET, &endpoint, query, false)
@@ -155,7 +159,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_normal_get_borrowable_coin_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint =
             v5spot_margin_trade::SpotMarginTrade::NormalGetBorrowableCoinInfo.to_string();
         self.http_manager
@@ -176,7 +180,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_normal_get_interest_quota(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5spot_margin_trade::SpotMarginTrade::NormalGetInterestQuota.to_string();
         self.http_manager
             .submit_request(Method::GET, &endpoint, query, false)
@@ -193,7 +197,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_normal_get_loan_account_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5spot_margin_trade::SpotMarginTrade::NormalGetLoanAccountInfo.to_string();
         self.http_manager
             .submit_request(Method::GET, &endpoint, query, false)
@@ -214,7 +218,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_normal_borrow(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let mut endpoint = v5spot_margin_trade::SpotMarginTrade::NormalBorrow.to_string();
         endpoint = endpoint.replace("$instrument_id", &query["instrument_id"]);
         self.http_manager
@@ -235,7 +239,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_normal_repay(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let mut endpoint = v5spot_margin_trade::SpotMarginTrade::NormalRepay.to_string();
         endpoint = endpoint.replace("$instrument_id", &query["instrument_id"]);
         self.http_manager
@@ -253,7 +257,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_normal_get_borrow_order_detail(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let mut endpoint =
             v5spot_margin_trade::SpotMarginTrade::NormalGetBorrowOrderDetail.to_string();
         endpoint = endpoint.replace("$instrument_id", &query["instrument_id"]);
@@ -273,7 +277,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_normal_get_repayment_order_detail(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let mut endpoint =
             v5spot_margin_trade::SpotMarginTrade::NormalGetRepaymentOrderDetail.to_string();
         endpoint = endpoint.replace("$instrument_id", &query["instrument_id"]);
@@ -296,7 +300,7 @@ impl SpotMarginTrade for SpotMarginTradeHTTP {
     async fn spot_margin_trade_normal_toggle_margin_trade(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let mut endpoint =
             v5spot_margin_trade::SpotMarginTrade::NormalToggleMarginTrade.to_string();
         endpoint = endpoint.replace("$instrument_id", &query["instrument_id"]);

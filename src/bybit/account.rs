@@ -12,67 +12,71 @@ use serde_json::Value;
 
 use crate::endpoints::v5account;
 
-use super::http_manager::{HttpManager, Manager};
+use super::{
+    Result,
+    http_manager::{HttpManager, Manager}
+};
+
 #[async_trait]
 pub trait Account {
     fn new(http_manager: Arc<HttpManager>) -> Self;
     async fn get_wallet_balance(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn upgrade_to_unified_trading_account(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_borrow_history(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_collateral_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_coin_greeks(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_fee_rates(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_account_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
     async fn get_transaction_log(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
     async fn set_margin_mode(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn set_mmp(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn reset_mmp(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 
     async fn get_mmp_state(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>>;
+    ) -> Result<Value>;
 }
 
 pub struct AccountHTTP {
@@ -106,7 +110,7 @@ impl Account for AccountHTTP {
     async fn get_wallet_balance(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::GetWalletBalance.to_string();
         let result = self
             .http_manager
@@ -125,7 +129,7 @@ impl Account for AccountHTTP {
     async fn upgrade_to_unified_trading_account(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::UpgradeToUnifiedAccount.to_string();
         let result = self
             .http_manager
@@ -144,7 +148,7 @@ impl Account for AccountHTTP {
     async fn get_borrow_history(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::GetBorrowHistory.to_string();
         let result = self
             .http_manager
@@ -163,7 +167,7 @@ impl Account for AccountHTTP {
     async fn get_collateral_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::GetCollateralInfo.to_string();
         let result = self
             .http_manager
@@ -182,7 +186,7 @@ impl Account for AccountHTTP {
     async fn get_coin_greeks(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::GetCoinGreeks.to_string();
         let result = self
             .http_manager
@@ -201,7 +205,7 @@ impl Account for AccountHTTP {
     async fn get_fee_rates(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::GetFeeRate.to_string();
         let result = self
             .http_manager
@@ -220,7 +224,7 @@ impl Account for AccountHTTP {
     async fn get_account_info(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::GetAccountInfo.to_string();
         let result = self
             .http_manager
@@ -239,7 +243,7 @@ impl Account for AccountHTTP {
     async fn get_transaction_log(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::GetTransactionLog.to_string();
         let result = self
             .http_manager
@@ -261,7 +265,7 @@ impl Account for AccountHTTP {
     async fn set_margin_mode(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::SetMarginMode.to_string();
         let result = self
             .http_manager
@@ -292,7 +296,7 @@ impl Account for AccountHTTP {
     async fn set_mmp(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::SetMMP.to_string();
         let result = self
             .http_manager
@@ -314,7 +318,7 @@ impl Account for AccountHTTP {
     async fn reset_mmp(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::ResetMMP.to_string();
         let result = self
             .http_manager
@@ -336,7 +340,7 @@ impl Account for AccountHTTP {
     async fn get_mmp_state(
         &self,
         query: HashMap<String, String>,
-    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<Value> {
         let endpoint = v5account::Account::GetMMPState.to_string();
         let result = self
             .http_manager
