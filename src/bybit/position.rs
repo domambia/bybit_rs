@@ -10,65 +10,34 @@ use futures::Future;
 use reqwest::Method;
 use serde_json::Value;
 
-use crate::endpoints::v5trade;
+use crate::endpoints::v5position;
 
 use super::{
+    http_manager::{HttpManager, Manager},
     Result,
-    http_manager::{HttpManager, Manager}
 };
-
 
 #[async_trait]
 pub trait Position {
     fn new(http_manager: Arc<HttpManager>) -> Self;
-    async fn get_position(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn get_position(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn set_leverage(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn set_leverage(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn switch_margin_mode(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn switch_margin_mode(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn set_tp_sl_mode(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn set_tp_sl_mode(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn switch_position_mode(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn switch_position_mode(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn set_risk_limit(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn set_risk_limit(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn set_trading_stop(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
-    async fn set_auto_add_margin(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn set_trading_stop(&self, query: HashMap<String, String>) -> Result<Value>;
+    async fn set_auto_add_margin(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn get_executions(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn get_executions(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn get_closed_pnl(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn get_closed_pnl(&self, query: HashMap<String, String>) -> Result<Value>;
 }
 
 pub struct PositionHTTP {
@@ -95,11 +64,8 @@ impl Position for PositionHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/position
-    async fn get_position(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn get_position(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::GetPositions.to_string();
         self.http_manager
             .submit_request(Method::GET, &path, query, true)
             .await
@@ -124,11 +90,8 @@ impl Position for PositionHTTP {
 
     ///    Additional information:
     ///        https://bybit-exchange.github.io/docs/v5/position/leverage
-    async fn set_leverage(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn set_leverage(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::SetLeverage.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
             .await
@@ -150,11 +113,8 @@ impl Position for PositionHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/position/cross-isolate
-    async fn switch_margin_mode(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn switch_margin_mode(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::SwitchMarginMode.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
             .await
@@ -176,11 +136,8 @@ impl Position for PositionHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/position/tpsl-mode
-    async fn set_tp_sl_mode(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn set_tp_sl_mode(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::SetTpSlMode.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
             .await
@@ -199,11 +156,8 @@ impl Position for PositionHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/position/position-mode
-    async fn switch_position_mode(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn switch_position_mode(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::SwitchPositionMode.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
             .await
@@ -226,11 +180,8 @@ impl Position for PositionHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/position/set-risk-limit
-    async fn set_risk_limit(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn set_risk_limit(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::SetRiskLimit.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
             .await
@@ -247,11 +198,8 @@ impl Position for PositionHTTP {
     /// Additional information:
     /// https://bybit-exchange.github.io/docs/v5/position/trading-stop
     ///
-    async fn set_trading_stop(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn set_trading_stop(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::SetTradingStop.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
             .await
@@ -269,11 +217,8 @@ impl Position for PositionHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/position/add-margin
-    async fn set_auto_add_margin(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn set_auto_add_margin(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::SetAutoAddMargin.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &path, true, query)
             .await
@@ -294,11 +239,8 @@ impl Position for PositionHTTP {
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/position/execution
     ///
-    async fn get_executions(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn get_executions(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::GetExecutions.to_string();
         self.http_manager
             .submit_request(Method::GET, &path, query, true)
             .await
@@ -318,11 +260,8 @@ impl Position for PositionHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/position/close-pnl
-    async fn get_closed_pnl(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
-        let path = v5trade::Trade::GetOpenOrders.to_string();
+    async fn get_closed_pnl(&self, query: HashMap<String, String>) -> Result<Value> {
+        let path = v5position::Position::GetClosedPnl.to_string();
         self.http_manager
             .submit_request(Method::GET, &path, query, true)
             .await
