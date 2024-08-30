@@ -8,10 +8,11 @@ use bybit_rs::bybit::{
     asset::{self, Asset},
     http_manager::{HttpManager, Manager},
     market::{self, Market},
-    trade::{self, Trade},
+    trade::{self, BatchOrderRequest, Trade},
 };
 
 use bybit_rs::errors::app_error::AppError;
+use hmac_sha256::Hash;
 use serde_json::Value;
 
 fn main() {
@@ -59,7 +60,7 @@ async fn start_app() -> Result<(), AppError> {
     query.insert("category".to_owned(), "linear".to_owned());
     query.insert("symbol".to_owned(), "BTCUSDT".to_owned());
     query.insert("orderType".to_owned(), "Limit".to_owned());
-    query.insert("qty".to_owned(), "0.06".to_owned());
+    query.insert("qty".to_owned(), "0.001".to_owned());
     query.insert("price".to_owned(), "25000".to_owned());
     query.insert("side".to_owned(), "Buy".to_owned());
     query.insert("timeInForce".to_owned(), "GTC".to_owned());
@@ -67,6 +68,31 @@ async fn start_app() -> Result<(), AppError> {
     let trade: trade::TradeHTTP = trade::TradeHTTP::new(manager.clone());
 
     match trade.place_order(query).await {
+        Ok(result) => println!("{:?}", result),
+        Err(e) => println!("{:?}", e),
+    }
+
+    println!("============== PLACE A BATCH OF ACTIVE ORDERS  =============== ");
+
+    let mut order_1 = HashMap::new();
+    order_1.insert("category".to_owned(), "linear".to_owned());
+    order_1.insert("symbol".to_owned(), "BTCUSDT".to_owned());
+    order_1.insert("orderType".to_owned(), "Limit".to_owned());
+    order_1.insert("qty".to_owned(), "0.001".to_owned());
+    order_1.insert("price".to_owned(), "25001".to_owned());
+    order_1.insert("side".to_owned(), "Buy".to_owned());
+    order_1.insert("timeInForce".to_owned(), "GTC".to_owned());
+
+    let mut order_2 = order_1.clone();
+    order_2.insert("price".to_owned(), "25002".to_owned());
+    let mut request_params = BatchOrderRequest {
+        category: "linear".to_owned(),
+        request: vec![order_1, order_2],
+    };
+
+    let trade: trade::TradeHTTP = trade::TradeHTTP::new(manager.clone());
+
+    match trade.batch_place_order(request_params).await {
         Ok(result) => println!("{:?}", result),
         Err(e) => println!("{:?}", e),
     }

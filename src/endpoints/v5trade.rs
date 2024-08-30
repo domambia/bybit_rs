@@ -16,7 +16,9 @@ impl std::fmt::Display for Trade {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             Trade::PlaceOrder => write!(f, "/v5/order/create"),
+            Trade::BatchPlaceOrder => write!(f, "/v5/order/create-batch"),
             Trade::AmendOrder => write!(f, "/v5/order/amend"),
+            Trade::BatchAmendOrder => write!(f, "/v5/order/amend-batch"),
             Trade::CancelOrder => write!(f, "/v5/order/cancel"),
             Trade::GetOpenOrders => write!(f, "/v5/order/realtime"),
             Trade::CancelAllOrders => write!(f, "/v5/order/cancel-all"),
