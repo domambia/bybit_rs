@@ -1,7 +1,6 @@
 #![allow(unused)]
 use async_trait::async_trait;
 use serde::Serialize;
-use serde_derive::Serialize;
 use std::{
     collections::{BTreeMap, HashMap},
     pin::Pin,
@@ -20,7 +19,7 @@ use super::{
 };
 
 /// Structure used for batch place & amend orders
-#[derive(Serialize)]
+#[derive(serde_derive::Serialize)]
 pub struct BatchOrderRequest {
     pub category: String,
     pub request: Vec<HashMap<String, String>>,
