@@ -1,5 +1,6 @@
 #![allow(unused)]
 use async_trait::async_trait;
+use serde::Serialize;
 use std::{
     collections::{BTreeMap, HashMap},
     pin::Pin,
@@ -13,59 +14,39 @@ use serde_json::Value;
 use crate::endpoints::v5trade;
 
 use super::{
+    http_manager::{HttpManager, Manager},
     Result,
-    http_manager::{HttpManager, Manager}
 };
+
+/// Structure used for batch place & amend orders
+#[derive(serde_derive::Serialize)]
+pub struct BatchOrderRequest {
+    pub category: String,
+    pub request: Vec<HashMap<String, String>>,
+}
+
 #[async_trait]
 pub trait Trade {
     fn new(http_manager: Arc<HttpManager>) -> Self;
-    async fn place_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
-    async fn amend_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn place_order(&self, query: HashMap<String, String>) -> Result<Value>;
+    async fn batch_place_order(&self, query: BatchOrderRequest) -> Result<Value>;
+    async fn amend_order(&self, query: HashMap<String, String>) -> Result<Value>;
+    async fn batch_amend_order(&self, query: BatchOrderRequest) -> Result<Value>;
 
-    async fn cancel_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn cancel_order(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn get_open_orders(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn get_open_orders(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn cancel_all_orders(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn cancel_all_orders(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn get_order_history(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn get_order_history(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn amend_batch_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn amend_batch_order(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn cancel_batch_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
-    async fn get_borrow_quota(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn cancel_batch_order(&self, query: HashMap<String, String>) -> Result<Value>;
+    async fn get_borrow_quota(&self, query: HashMap<String, String>) -> Result<Value>;
 
-    async fn set_dcp(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value>;
+    async fn set_dcp(&self, query: HashMap<String, String>) -> Result<Value>;
 }
 pub struct TradeHTTP {
     http_manager: Arc<HttpManager>,
@@ -92,11 +73,24 @@ impl Trade for TradeHTTP {
     ///     Request results as JSON data.
     /// Additional information:
     ///     https://bybit-exchange.github.io/docs/v5/order/create-order
-    async fn place_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn place_order(&self, query: HashMap<String, String>) -> Result<Value> {
         let endpoint = v5trade::Trade::PlaceOrder.to_string();
+        self.http_manager
+            .submit_post_request(Method::POST, &endpoint, true, query)
+            .await
+    }
+
+    ////
+    /// This method supports to create a batch of orders for spot, spot margin, linear perpetual, inverse futures and options.
+    /// Required args:
+    ///     category (string): Product type Unified account: spot, linear, optionNormal account: linear, inverse. Please note that category is not involved with business logic
+    ///     request (array): a list of orders as in the place_order API
+    /// Returns:
+    ///     Request results as JSON data.
+    /// Additional information:
+    ///     https://bybit-exchange.github.io/docs/v5/order/batch-place
+    async fn batch_place_order(&self, query: BatchOrderRequest) -> Result<Value> {
+        let endpoint = v5trade::Trade::BatchPlaceOrder.to_string();
         self.http_manager
             .submit_post_request(Method::POST, &endpoint, true, query)
             .await
@@ -113,14 +107,31 @@ impl Trade for TradeHTTP {
     ///         Request results as JSON data.
 
     ///     Additional information:
-    async fn amend_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn amend_order(&self, query: HashMap<String, String>) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
                 &v5trade::Trade::AmendOrder.to_string(),
+                true,
+                query,
+            )
+            .await
+    }
+
+    /// Unified account covers: Linear contract / Options
+    /// Normal account covers: USDT perpetual / Inverse perpetual / Inverse futures
+    /// Required args:
+    ///     category (string): Product type Unified account: spot, linear, optionNormal account: linear, inverse. Please note that category is not involved with business logic
+    ///     request (array): list of order amend parameters. See amend_order.
+    /// Returns:
+    ///     Request results as JSON data.
+    /// Additional information:
+    ///     https://bybit-exchange.github.io/docs/v5/order/batch-amend
+    async fn batch_amend_order(&self, query: BatchOrderRequest) -> Result<Value> {
+        self.http_manager
+            .submit_post_request(
+                Method::POST,
+                &v5trade::Trade::BatchAmendOrder.to_string(),
                 true,
                 query,
             )
@@ -141,10 +152,7 @@ impl Trade for TradeHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/cancel-order
-    async fn cancel_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn cancel_order(&self, query: HashMap<String, String>) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
@@ -165,10 +173,7 @@ impl Trade for TradeHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/open-order
-    async fn get_open_orders(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn get_open_orders(&self, query: HashMap<String, String>) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -193,10 +198,7 @@ impl Trade for TradeHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/cancel-all
-    async fn cancel_all_orders(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn cancel_all_orders(&self, query: HashMap<String, String>) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
@@ -222,10 +224,7 @@ impl Trade for TradeHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/order-list
-    async fn get_order_history(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn get_order_history(&self, query: HashMap<String, String>) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -250,10 +249,7 @@ impl Trade for TradeHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/batch-place
-    async fn amend_batch_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn amend_batch_order(&self, query: HashMap<String, String>) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
@@ -275,10 +271,7 @@ impl Trade for TradeHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/batch-cancel
-    async fn cancel_batch_order(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn cancel_batch_order(&self, query: HashMap<String, String>) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,
@@ -300,10 +293,7 @@ impl Trade for TradeHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/spot-borrow-quota
-    async fn get_borrow_quota(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn get_borrow_quota(&self, query: HashMap<String, String>) -> Result<Value> {
         self.http_manager
             .submit_request(
                 Method::GET,
@@ -323,10 +313,7 @@ impl Trade for TradeHTTP {
 
     ///     Additional information:
     ///         https://bybit-exchange.github.io/docs/v5/order/dcp
-    async fn set_dcp(
-        &self,
-        query: HashMap<String, String>,
-    ) -> Result<Value> {
+    async fn set_dcp(&self, query: HashMap<String, String>) -> Result<Value> {
         self.http_manager
             .submit_post_request(
                 Method::POST,

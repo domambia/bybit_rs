@@ -3,9 +3,11 @@ use async_trait::async_trait;
 use http::method;
 use reqwest::{header, Method};
 use ring::hmac;
+use serde::Serialize;
 use serde_json::{json, to_string, Value};
 use std::{
     collections::{BTreeMap, HashMap},
+    sync::Arc,
     time::{SystemTime, UNIX_EPOCH},
 };
 use url::form_urlencoded::{self, Serializer};
@@ -19,7 +21,6 @@ pub type HTTPManagerResult<T> = std::result::Result<T, Error>;
 
 #[async_trait]
 pub trait Manager {
-
     async fn auth(
         &self,
         req_params: &BTreeMap<String, String>,
@@ -42,12 +43,12 @@ pub trait Manager {
         self.submit_request(method, path, query, true).await
     }
 
-    async fn submit_post_request(
+    async fn submit_post_request<T: Serialize + Send>(
         &self,
         method: Method,
         path: &str,
         auth: bool,
-        json_input: HashMap<String, String>,
+        json_input: T,
     ) -> HTTPManagerResult<Value>;
 }
 pub struct HttpManager {
@@ -198,12 +199,12 @@ impl Manager for HttpManager {
         Ok(body)
     }
 
-    async fn submit_post_request(
+    async fn submit_post_request<T: Serialize + Send>(
         &self,
         method: Method,
         path: &str,
         auth: bool,
-        json_input: HashMap<String, String>,
+        json_input: T,
     ) -> HTTPManagerResult<Value> {
         let timestamp = utils::generate_timestamp()? as u128;
 
